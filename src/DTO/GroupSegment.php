@@ -43,9 +43,9 @@ class GroupSegment
         array $targets = []
     )
     {
-        $this->parent = $parent;
         $this->displayName = $displayName;
         $this->avatar = $avatar;
+        $this->parent = $parent;
         $this->members = $members;
         $this->properties = $properties;
         $this->targets = $targets;

@@ -32,8 +32,8 @@ class User
     public function __construct(
         string $username,
         string $email,
-        ?string $displayName,
-        ?string $avatar,
+        string $displayName = null,
+        string $avatar = null,
         array $properties = []
     )
     {

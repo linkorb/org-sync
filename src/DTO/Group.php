@@ -13,4 +13,12 @@ class Group
     {
         $this->segments = $segments;
     }
+
+    /**
+     * @return GroupSegment[]
+     */
+    public function getSegments(): array
+    {
+        return $this->segments;
+    }
 }
