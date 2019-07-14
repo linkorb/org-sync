@@ -6,5 +6,5 @@ use LinkORB\OrgSync\DTO\User;
 
 interface UserPushInterface
 {
-    public function push(User $user): self;
+    public function pushUser(User $user): self;
 }

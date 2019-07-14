@@ -5,7 +5,7 @@ namespace LinkORB\OrgSync\Tests\Helpers;
 class GettersTestCaseData
 {
     /**
-     * @var mixed
+     * @var object
      */
     private $dto;
 
@@ -37,6 +37,9 @@ class GettersTestCaseData
         $this->methodName = $methodName;
     }
 
+    /**
+     * @return object
+     */
     public function getDto()
     {
         if (!$this->dto) {

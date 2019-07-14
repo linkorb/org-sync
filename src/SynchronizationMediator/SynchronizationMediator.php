@@ -30,34 +30,34 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
 
     public function pushOrganization(Organization $organization): SynchronizationMediatorInterface
     {
-        $this->adapterFactory->createOrganizationPushAdapter()->push($organization);
+        $this->adapterFactory->createOrganizationPushAdapter()->pushOrganization($organization);
 
         return $this;
     }
 
     public function pushGroup(Group $group): SynchronizationMediatorInterface
     {
-        $this->adapterFactory->createGroupPushAdapter()->push($group);
+        $this->adapterFactory->createGroupPushAdapter()->pushGroup($group);
 
         return $this;
     }
 
     public function pushUser(User $user): SynchronizationMediatorInterface
     {
-        $this->adapterFactory->createUserPushAdapter()->push($user);
+        $this->adapterFactory->createUserPushAdapter()->pushUser($user);
 
         return $this;
     }
 
     public function setPassword(User $user, string $password): SynchronizationMediatorInterface
     {
-        $this->adapterFactory->createSetPasswordAdapter()->set($user, $password);
+        $this->adapterFactory->createSetPasswordAdapter()->setPassword($user, $password);
 
         return $this;
     }
 
     public function pullOrganization(): Organization
     {
-        return $this->adapterFactory->createOrganizationPullAdapter()->pull();
+        return $this->adapterFactory->createOrganizationPullAdapter()->pullOrganization();
     }
 }

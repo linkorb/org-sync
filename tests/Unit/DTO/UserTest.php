@@ -12,6 +12,8 @@ class UserTest extends AbstractGettersTestCase
         return [
             ['username', 'test222'],
             ['username', 'qwerty'],
+            ['password', '123Qwe'],
+            ['password', null],
             ['email', 'a@a.com'],
             ['email', 'test@test'],
             ['displayName', null],
@@ -28,6 +30,7 @@ class UserTest extends AbstractGettersTestCase
     {
         return [
             'username' => 'temp123',
+            'password' => '123456',
             'email' => 'example@test.com',
             'displayName' => null,
             'avatar' => null,

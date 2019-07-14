@@ -12,6 +12,11 @@ class User
     /**
      * @var string
      */
+    private $password;
+
+    /**
+     * @var string
+     */
     private $email;
 
     /**
@@ -31,6 +36,7 @@ class User
 
     public function __construct(
         string $username,
+        ?string $password,
         string $email,
         string $displayName = null,
         string $avatar = null,
@@ -38,6 +44,7 @@ class User
     )
     {
         $this->username = $username;
+        $this->password = $password;
         $this->email = $email;
         $this->displayName = $displayName;
         $this->avatar = $avatar;
@@ -50,6 +57,14 @@ class User
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
     }
 
     /**

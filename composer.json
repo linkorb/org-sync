@@ -5,6 +5,8 @@
   "description": "Organization sync library",
   "require": {
     "php": "^7.3",
+    "knplabs/github-api": "^2.11",
+    "php-http/guzzle6-adapter": "^1.1",
     "symfony/cache": "^4.3",
     "symfony/serializer": "^4.3"
   },

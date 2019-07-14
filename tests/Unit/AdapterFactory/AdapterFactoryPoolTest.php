@@ -5,7 +5,7 @@ namespace LinkORB\OrgSync\Tests\Unit\AdapterFactory;
 use InvalidArgumentException;
 use LinkORB\OrgSync\AdapterFactory\AdapterFactoryInterface;
 use LinkORB\OrgSync\AdapterFactory\AdapterFactoryPool;
-use LinkORB\OrgSync\AdapterFactory\CamudaAdapterFactory;
+use LinkORB\OrgSync\AdapterFactory\CamundaAdapterFactory;
 use LinkORB\OrgSync\AdapterFactory\GithubAdapterFactory;
 use LinkORB\OrgSync\AdapterFactory\LdapAdapterFactory;
 use LinkORB\OrgSync\AdapterFactory\MatterMostAdapterFactory;
@@ -24,7 +24,7 @@ class AdapterFactoryPoolTest extends TestCase
     {
         $this->map = [
             GithubAdapterFactory::ADAPTER_KEY => $this->createMock(GithubAdapterFactory::class),
-            CamudaAdapterFactory::ADAPTER_KEY => $this->createMock(CamudaAdapterFactory::class),
+            CamundaAdapterFactory::ADAPTER_KEY => $this->createMock(CamundaAdapterFactory::class),
             LdapAdapterFactory::ADAPTER_KEY => $this->createMock(LdapAdapterFactory::class),
             MatterMostAdapterFactory::ADAPTER_KEY => $this->createMock(MatterMostAdapterFactory::class),
         ];
@@ -55,7 +55,7 @@ class AdapterFactoryPoolTest extends TestCase
     {
         return [
             [GithubAdapterFactory::ADAPTER_KEY],
-            [CamudaAdapterFactory::ADAPTER_KEY],
+            [CamundaAdapterFactory::ADAPTER_KEY],
             [LdapAdapterFactory::ADAPTER_KEY],
             [MatterMostAdapterFactory::ADAPTER_KEY],
         ];

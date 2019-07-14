@@ -6,5 +6,5 @@ use LinkORB\OrgSync\DTO\Organization;
 
 interface OrganizationPullInterface
 {
-    public function pull(): Organization;
+    public function pullOrganization(): Organization;
 }

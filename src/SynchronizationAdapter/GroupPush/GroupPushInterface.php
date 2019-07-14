@@ -6,5 +6,5 @@ use LinkORB\OrgSync\DTO\Group;
 
 interface GroupPushInterface
 {
-    public function push(Group $group);
+    public function pushGroup(Group $group);
 }

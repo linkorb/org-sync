@@ -74,7 +74,7 @@ class SynchronizationMediatorTest extends TestCase
 
         $this->adapterFactory->expects($this->once())->method('createOrganizationPushAdapter');
 
-        $this->organizationPushAdapter->expects($this->once())->method('push')->with($organization)->willReturnSelf();
+        $this->organizationPushAdapter->expects($this->once())->method('pushOrganization')->with($organization)->willReturnSelf();
 
         $this->assertSame($this->mediator, $this->mediator->pushOrganization($organization));
     }
@@ -85,7 +85,7 @@ class SynchronizationMediatorTest extends TestCase
 
         $this->adapterFactory->expects($this->once())->method('createGroupPushAdapter');
 
-        $this->groupPushAdapter->expects($this->once())->method('push')->with($group)->willReturnSelf();
+        $this->groupPushAdapter->expects($this->once())->method('pushGroup')->with($group)->willReturnSelf();
 
         $this->assertSame($this->mediator, $this->mediator->pushGroup($group));
     }
@@ -96,7 +96,7 @@ class SynchronizationMediatorTest extends TestCase
 
         $this->adapterFactory->expects($this->once())->method('createUserPushAdapter');
 
-        $this->userPushAdapter->expects($this->once())->method('push')->with($user)->willReturnSelf();
+        $this->userPushAdapter->expects($this->once())->method('pushUser')->with($user)->willReturnSelf();
 
         $this->assertSame($this->mediator, $this->mediator->pushUser($user));
     }
@@ -108,7 +108,7 @@ class SynchronizationMediatorTest extends TestCase
 
         $this->adapterFactory->expects($this->once())->method('createSetPasswordAdapter');
 
-        $this->setPasswordAdapter->expects($this->once())->method('set')->with($user, $password)->willReturnSelf();
+        $this->setPasswordAdapter->expects($this->once())->method('setPassword')->with($user, $password)->willReturnSelf();
 
         $this->assertSame($this->mediator, $this->mediator->setPassword($user, $password));
     }
@@ -119,7 +119,7 @@ class SynchronizationMediatorTest extends TestCase
 
         $organization = $this->createMock(Organization::class);
 
-        $this->organizationPullAdapter->expects($this->once())->method('pull')->with()->willReturn($organization);
+        $this->organizationPullAdapter->expects($this->once())->method('pullOrganization')->with()->willReturn($organization);
 
         $this->assertSame($organization, $this->mediator->pullOrganization());
     }

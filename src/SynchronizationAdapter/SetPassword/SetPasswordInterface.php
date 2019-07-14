@@ -6,5 +6,5 @@ use LinkORB\OrgSync\DTO\User;
 
 interface SetPasswordInterface
 {
-    public function set(User $user, string $password): self;
+    public function setPassword(User $user, string $password): self;
 }

@@ -6,5 +6,5 @@ use LinkORB\OrgSync\DTO\Organization;
 
 interface OrganizationPushInterface
 {
-    public function push(Organization $organization): self;
+    public function pushOrganization(Organization $organization): self;
 }

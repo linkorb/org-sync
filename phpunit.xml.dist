@@ -3,7 +3,7 @@
 <phpunit bootstrap="tests/bootstrap.php" colors="true" beStrictAboutTestsThatDoNotTestAnything="true">
     <testsuites>
         <testsuite name="OrgSync test suite">
-            <directory>tests/unit/</directory>
+            <directory>tests/Unit/</directory>
         </testsuite>
     </testsuites>
 
