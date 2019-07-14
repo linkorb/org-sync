@@ -10,6 +10,8 @@ use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\User;
 use LinkORB\OrgSync\Exception\SyncHttpException;
 use LinkORB\OrgSync\Exception\UserSyncException;
+use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\PasswordHelper;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\CamundaUserPushAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -18,16 +20,24 @@ use Psr\Http\Message\ResponseInterface;
 class CamundaUserPushAdapterTest extends TestCase
 {
     /** @var MockObject|CamundaUserPushAdapter */
-    private $camundaAdapter;
+    private $adapter;
 
     /** @var MockObject|Client */
     private $httpClient;
 
+    /** @var PasswordHelper */
+    private $passwordHelper;
+
     protected function setUp(): void
     {
         $this->httpClient = $this->createMock(Client::class);
-        $this->camundaAdapter = $this->createPartialMock(CamundaUserPushAdapter::class, ['exists', 'generatePassword']);
-        $this->camundaAdapter->__construct($this->httpClient);
+        $this->passwordHelper = new PasswordHelper(null);
+
+        $this->adapter = new CamundaUserPushAdapter(
+            $this->httpClient,
+            $this->passwordHelper,
+            new ResponseChecker()
+        );
 
         parent::setUp();
     }
@@ -35,35 +45,38 @@ class CamundaUserPushAdapterTest extends TestCase
     public function testCreate()
     {
         list($id, $firstName, $lastName, $email, $user) = $this->getUserData();
-        $password = '0123456789';
-
-        $this->camundaAdapter->expects($this->once())->method('exists')->with($user)->willReturn(false);
-        $this->camundaAdapter->expects($this->once())->method('generatePassword')->willReturn($password);
+        $password = $this->passwordHelper->getDefaultPassword($id);
 
         $this->httpClient
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('__call')
-            ->with(
-                'post',
-                ['/user/create',
-                    [
-                        RequestOptions::JSON => [
-                            'profile' => [
-                                'id' => $id,
-                                'firstName' => $firstName,
-                                'lastName' => $lastName,
-                                'email' => $email,
+            ->withConsecutive(
+                ['get', [sprintf('/user/%s/profile', $id)]],
+                [
+                    'post',
+                    ['/user/create',
+                        [
+                            RequestOptions::JSON => [
+                                'profile' => [
+                                    'id' => $id,
+                                    'firstName' => $firstName,
+                                    'lastName' => $lastName,
+                                    'email' => $email,
+                                ],
+                                'credentials' => [
+                                    'password' => $password,
+                                ],
                             ],
-                            'credentials' => [
-                                'password' => $password,
-                            ],
-                        ],
+                        ]
                     ]
                 ]
             )
-            ->willReturn($this->createConfiguredMock(ResponseInterface::class, ['getStatusCode' => 200]));
+            ->willReturnOnConsecutiveCalls(
+                $this->createConfiguredMock(ResponseInterface::class, ['getStatusCode' => 404]),
+                $this->createConfiguredMock(ResponseInterface::class, ['getStatusCode' => 200])
+            );
 
-        $this->assertSame($this->camundaAdapter, $this->camundaAdapter->pushUser($user));
+        $this->assertSame($this->adapter, $this->adapter->pushUser($user));
     }
 
     /**
@@ -71,14 +84,13 @@ class CamundaUserPushAdapterTest extends TestCase
      */
     public function testCreateHttpException(bool $exists)
     {
-        $this->camundaAdapter->method('exists')->willReturn($exists);
-
         $statusCode = 400;
         $body = '{"error":"fatal"}';
 
         $this->httpClient
             ->method('__call')
-            ->willReturn(
+            ->willReturnOnConsecutiveCalls(
+                $this->createConfiguredMock(Response::class, ['getStatusCode' => $exists ? 200 : 404]),
                 $this->createConfiguredMock(Response::class, ['getStatusCode' => $statusCode, 'getBody' => $body])
             );
 
@@ -86,7 +98,7 @@ class CamundaUserPushAdapterTest extends TestCase
         $this->expectExceptionMessage($body);
         $this->expectExceptionCode($statusCode);
 
-        $this->camundaAdapter->pushUser($this->createConfiguredMock(User::class, ['getProperties' => []]));
+        $this->adapter->pushUser($this->createConfiguredMock(User::class, ['getProperties' => []]));
     }
 
     /**
@@ -94,43 +106,45 @@ class CamundaUserPushAdapterTest extends TestCase
      */
     public function testCreateUserSyncException(bool $exists)
     {
-        $this->camundaAdapter->method('exists')->willReturn($exists);
-
         $guzzleException = new ConnectException('no connection', $this->createMock(Request::class));
 
-        $this->httpClient->method('__call')->willThrowException($guzzleException);
+        $this->httpClient->method('__call')->willReturnOnConsecutiveCalls(
+            $this->createConfiguredMock(Response::class, ['getStatusCode' => $exists ? 200 : 404]),
+            $this->throwException($guzzleException)
+        );
 
         $this->expectExceptionObject(new SyncHttpException($guzzleException));
 
-        $this->camundaAdapter->pushUser($this->createConfiguredMock(User::class, ['getProperties' => []]));
+        $this->adapter->pushUser($this->createConfiguredMock(User::class, ['getProperties' => []]));
     }
 
     public function testUpdate()
     {
         list($id, $firstName, $lastName, $email, $user) = $this->getUserData();
 
-        $this->camundaAdapter->expects($this->once())->method('exists')->with($user)->willReturn(true);
-
         $this->httpClient
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('__call')
-            ->with(
-                'put',
+            ->withConsecutive(
+                ['get', [sprintf('/user/%s/profile', $id)]],
                 [
-                    sprintf('/user/%s/profile', $id),
+                    'put',
                     [
-                        RequestOptions::JSON => [
-                            'id' => $id,
-                            'firstName' => $firstName,
-                            'lastName' => $lastName,
-                            'email' => $email,
-                        ],
+                        sprintf('/user/%s/profile', $id),
+                        [
+                            RequestOptions::JSON => [
+                                'id' => $id,
+                                'firstName' => $firstName,
+                                'lastName' => $lastName,
+                                'email' => $email,
+                            ],
+                        ]
                     ]
                 ]
             )
             ->willReturn($this->createConfiguredMock(ResponseInterface::class, ['getStatusCode' => 200]));
 
-        $this->assertSame($this->camundaAdapter, $this->camundaAdapter->pushUser($user));
+        $this->assertSame($this->adapter, $this->adapter->pushUser($user));
     }
 
     public function getExceptionData(): array

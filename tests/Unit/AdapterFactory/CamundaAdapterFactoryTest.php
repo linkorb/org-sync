@@ -4,7 +4,9 @@ namespace LinkORB\OrgSync\Tests\Unit\AdapterFactory;
 
 use GuzzleHttp\Client;
 use LinkORB\OrgSync\AdapterFactory\CamundaAdapterFactory;
-use LinkORB\OrgSync\SynchronizationAdapter\UserPush\UserPushInterface;
+use LinkORB\OrgSync\Services\PasswordHelper;
+use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\CamundaSetPasswordAdapter;
+use LinkORB\OrgSync\SynchronizationAdapter\UserPush\CamundaUserPushAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -16,13 +18,17 @@ class CamundaAdapterFactoryTest extends TestCase
     /** @var Client|MockObject */
     private $httpClient;
 
+    /** @var PasswordHelper|MockObject */
+    private $passwordHelper;
+
     protected function setUp(): void
     {
         $this->httpClient = $this->createMock(Client::class);
+        $this->passwordHelper = $this->createMock(PasswordHelper::class);
 
         $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getClient']);
         $this->factory->method('getClient')->willReturn($this->httpClient);
-        $this->factory->__construct('test', null, null);
+        $this->factory->__construct('test', null, null, null);
 
         parent::setUp();
     }
@@ -32,21 +38,31 @@ class CamundaAdapterFactoryTest extends TestCase
      */
     public function testConstruct(string $baseUri, ?string $authUsername, ?string $authPassword)
     {
+        $salt = 'some test salt';
         $options = ['base_uri' => $baseUri];
 
         if ($authPassword && $authUsername) {
             $options['auth'] = [$authUsername, $authPassword];
         }
 
-        $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getClient']);
-        $this->factory->expects($this->once())->method('getClient')->with($options)->willReturn($this->httpClient);
+        $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getClient', 'getPasswordHelper']);
+        $this->factory
+            ->expects($this->once())
+            ->method('getClient')
+            ->with($options)
+            ->willReturn($this->httpClient);
+        $this->factory
+            ->expects($this->once())
+            ->method('getPasswordHelper')
+            ->with($salt)
+            ->willReturn($this->passwordHelper);
 
-        $this->factory->__construct($baseUri, $authUsername, $authPassword);
+        $this->factory->__construct($baseUri, $authUsername, $authPassword, $salt);
     }
 
     public function testCreateUserPushAdapter()
     {
-        $this->assertInstanceOf(UserPushInterface::class, $this->factory->createUserPushAdapter());
+        $this->assertInstanceOf(CamundaUserPushAdapter::class, $this->factory->createUserPushAdapter());
     }
 
     public function testCreateOrganizationPullAdapter()
@@ -56,7 +72,7 @@ class CamundaAdapterFactoryTest extends TestCase
 
     public function testCreateSetPasswordAdapter()
     {
-        $this->markTestSkipped('TODO: add');
+        $this->assertInstanceOf(CamundaSetPasswordAdapter::class, $this->factory->createSetPasswordAdapter());
     }
 
     public function testCreateOrganizationPushAdapter()

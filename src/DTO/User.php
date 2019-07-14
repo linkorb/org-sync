@@ -37,7 +37,7 @@ class User
     public function __construct(
         string $username,
         ?string $password,
-        string $email,
+        string $email = null,
         string $displayName = null,
         string $avatar = null,
         array $properties = []

@@ -6,20 +6,28 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\User;
 use LinkORB\OrgSync\Exception\SyncHttpException;
-use LinkORB\OrgSync\Exception\UserSyncException;
-use Psr\Http\Message\ResponseInterface;
+use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\PasswordHelper;
 use Throwable;
 
-class CamundaUserPushAdapter implements UserPushInterface
+final class CamundaUserPushAdapter implements UserPushInterface
 {
     use CreateUpdateUserAwareTrait;
 
     /** @var Client */
     private $httpClient;
 
-    public function __construct(Client $httpClient)
+    /** @var PasswordHelper */
+    private $passwordHelper;
+
+    /** @var ResponseChecker */
+    private $responseChecker;
+
+    public function __construct(Client $httpClient, PasswordHelper $passwordHelper, ResponseChecker $responseChecker)
     {
         $this->httpClient = $httpClient;
+        $this->passwordHelper = $passwordHelper;
+        $this->responseChecker = $responseChecker;
     }
 
     public function pushUser(User $user): UserPushInterface
@@ -54,7 +62,7 @@ class CamundaUserPushAdapter implements UserPushInterface
                             'email' => $user->getEmail(),
                         ],
                         'credentials' => [
-                            'password' => $this->generatePassword(),
+                            'password' => $this->passwordHelper->getDefaultPassword($user->getUsername()),
                         ],
                     ],
                 ]
@@ -63,7 +71,7 @@ class CamundaUserPushAdapter implements UserPushInterface
             throw new SyncHttpException($exception);
         }
 
-        $this->assertCorrectResponse($response);
+        $this->responseChecker->assertResponse($response);
     }
 
     protected function update(User $user): void
@@ -84,18 +92,6 @@ class CamundaUserPushAdapter implements UserPushInterface
             throw new SyncHttpException($exception);
         }
 
-        $this->assertCorrectResponse($response);
-    }
-
-    private function assertCorrectResponse(ResponseInterface $response): void
-    {
-        if ($response->getStatusCode() >= 400) {
-            throw new UserSyncException((string) $response->getBody(), $response->getStatusCode());
-        }
-    }
-
-    protected function generatePassword(): string
-    {
-        return substr(md5(uniqid()), 0, 8);
+        $this->responseChecker->assertResponse($response);
     }
 }
