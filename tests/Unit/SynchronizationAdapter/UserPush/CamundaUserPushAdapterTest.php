@@ -36,7 +36,7 @@ class CamundaUserPushAdapterTest extends TestCase
         $this->adapter = new CamundaUserPushAdapter(
             $this->httpClient,
             $this->passwordHelper,
-            new ResponseChecker()
+            new ResponseChecker(User::class)
         );
 
         parent::setUp();

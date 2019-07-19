@@ -5,6 +5,8 @@ namespace LinkORB\OrgSync\Tests\Unit\AdapterFactory;
 use GuzzleHttp\Client;
 use LinkORB\OrgSync\AdapterFactory\CamundaAdapterFactory;
 use LinkORB\OrgSync\Services\PasswordHelper;
+use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\CamundaGroupPushAdapter;
+use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\CamundaOrganizationPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\CamundaSetPasswordAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\CamundaUserPushAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -67,7 +69,7 @@ class CamundaAdapterFactoryTest extends TestCase
 
     public function testCreateOrganizationPullAdapter()
     {
-        $this->markTestSkipped('TODO: add');
+        $this->markTestSkipped('Need to implement');
     }
 
     public function testCreateSetPasswordAdapter()
@@ -77,12 +79,12 @@ class CamundaAdapterFactoryTest extends TestCase
 
     public function testCreateOrganizationPushAdapter()
     {
-        $this->markTestSkipped('TODO: add');
+        $this->assertInstanceOf(CamundaOrganizationPushAdapter::class, $this->factory->createOrganizationPushAdapter());
     }
 
     public function testCreateGroupPushAdapter()
     {
-        $this->markTestSkipped('TODO: add');
+       $this->assertInstanceOf(CamundaGroupPushAdapter::class, $this->factory->createGroupPushAdapter());
     }
 
     public function getAdapterFactoryData(): array

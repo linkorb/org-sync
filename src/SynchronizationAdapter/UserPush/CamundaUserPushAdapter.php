@@ -32,7 +32,7 @@ final class CamundaUserPushAdapter implements UserPushInterface
 
     public function pushUser(User $user): UserPushInterface
     {
-        $this->doPush($user);
+        $this->doPushUser($user);
 
         return $this;
     }

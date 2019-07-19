@@ -31,7 +31,11 @@ class CamundaSetPasswordAdapterTest extends TestCase
         $this->httpClient = $this->createMock(Client::class);
         $this->passwordHelper = new PasswordHelper(null);
 
-        $this->adapter = new CamundaSetPasswordAdapter($this->httpClient, $this->passwordHelper, new ResponseChecker());
+        $this->adapter = new CamundaSetPasswordAdapter(
+            $this->httpClient,
+            $this->passwordHelper,
+            new ResponseChecker(User::class)
+        );
 
         parent::setUp();
     }

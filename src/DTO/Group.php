@@ -5,6 +5,10 @@ namespace LinkORB\OrgSync\DTO;
 class Group
 {
     /**
+     * @var string
+     */
+    private $name;
+    /**
      * @var Group|null
      */
     private $parent;
@@ -35,6 +39,7 @@ class Group
     private $targets;
 
     public function __construct(
+        string $name,
         string $displayName,
         string $avatar = null,
         Group $parent = null,
@@ -43,12 +48,21 @@ class Group
         array $targets = []
     )
     {
+        $this->name = $name;
         $this->displayName = $displayName;
         $this->avatar = $avatar;
         $this->parent = $parent;
         $this->members = $members;
         $this->properties = $properties;
         $this->targets = $targets;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     /**

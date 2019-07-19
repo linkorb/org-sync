@@ -12,6 +12,8 @@ class GroupTest extends AbstractGettersTestCase
     public function gettersDataProvider(): array
     {
         return [
+            ['name', ''],
+            ['name', 'test name'],
             ['parent', $this->createMock(Group::class)],
             ['parent', null],
             ['properties', []],
@@ -34,6 +36,7 @@ class GroupTest extends AbstractGettersTestCase
     public function getDefaultArgs(): array
     {
         return [
+            'name' => 'test',
             'displayName' => 'testName',
             'avatar' => null,
             'parent' => null,

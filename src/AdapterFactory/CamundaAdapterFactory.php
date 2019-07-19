@@ -2,11 +2,16 @@
 
 namespace LinkORB\OrgSync\AdapterFactory;
 
+use BadMethodCallException;
 use GuzzleHttp\Client;
+use LinkORB\OrgSync\DTO\Group;
+use LinkORB\OrgSync\DTO\User;
 use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
+use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\CamundaGroupPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
+use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\CamundaOrganizationPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\OrganizationPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\CamundaSetPasswordAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\SetPasswordInterface;
@@ -39,27 +44,35 @@ class CamundaAdapterFactory implements AdapterFactoryInterface
 
     public function createOrganizationPullAdapter(): OrganizationPullInterface
     {
-        // TODO: Implement createOrganizationPullAdapter() method.
+        throw new BadMethodCallException('Not implemented yet');
     }
 
     public function createGroupPushAdapter(): GroupPushInterface
     {
-        // TODO: Implement createGroupPushAdapter() method.
+        return new CamundaGroupPushAdapter($this->camundaClient, new ResponseChecker(Group::class));
     }
 
     public function createUserPushAdapter(): UserPushInterface
     {
-        return new CamundaUserPushAdapter($this->camundaClient, $this->passwordHelper, new ResponseChecker());
+        return new CamundaUserPushAdapter(
+            $this->camundaClient,
+            $this->passwordHelper,
+            new ResponseChecker(User::class)
+        );
     }
 
     public function createSetPasswordAdapter(): SetPasswordInterface
     {
-        return new CamundaSetPasswordAdapter($this->camundaClient, $this->passwordHelper, new ResponseChecker());
+        return new CamundaSetPasswordAdapter(
+            $this->camundaClient,
+            $this->passwordHelper,
+            new ResponseChecker(User::class)
+        );
     }
 
     public function createOrganizationPushAdapter(): OrganizationPushInterface
     {
-        // TODO: Implement createOrganizationPushAdapter() method.
+        return new CamundaOrganizationPushAdapter();
     }
 
     protected function getClient(array $options): Client

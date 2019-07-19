@@ -6,7 +6,7 @@ use LinkORB\OrgSync\DTO\User;
 
 trait CreateUpdateUserAwareTrait
 {
-    public function doPush(User $user): void
+    public function doPushUser(User $user): void
     {
         if (!$this->exists($user)) {
             $this->create($user);
