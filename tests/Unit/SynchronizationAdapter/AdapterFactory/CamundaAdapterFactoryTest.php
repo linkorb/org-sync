@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace LinkORB\OrgSync\Tests\Unit\AdapterFactory;
+namespace LinkORB\OrgSync\Tests\Unit\SynchronizationAdapter\AdapterFactory;
 
 use GuzzleHttp\Client;
-use LinkORB\OrgSync\AdapterFactory\CamundaAdapterFactory;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\CamundaAdapterFactory;
 use LinkORB\OrgSync\Services\PasswordHelper;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\CamundaGroupPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\CamundaOrganizationPushAdapter;

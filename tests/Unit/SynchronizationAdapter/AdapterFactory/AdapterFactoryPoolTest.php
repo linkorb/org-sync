@@ -1,14 +1,14 @@
 <?php
 
-namespace LinkORB\OrgSync\Tests\Unit\AdapterFactory;
+namespace LinkORB\OrgSync\Tests\Unit\SynchronizationAdapter\AdapterFactory;
 
 use InvalidArgumentException;
-use LinkORB\OrgSync\AdapterFactory\AdapterFactoryInterface;
-use LinkORB\OrgSync\AdapterFactory\AdapterFactoryPool;
-use LinkORB\OrgSync\AdapterFactory\CamundaAdapterFactory;
-use LinkORB\OrgSync\AdapterFactory\GithubAdapterFactory;
-use LinkORB\OrgSync\AdapterFactory\LdapAdapterFactory;
-use LinkORB\OrgSync\AdapterFactory\MatterMostAdapterFactory;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryInterface;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryPool;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\CamundaAdapterFactory;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\GithubAdapterFactory;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\LdapAdapterFactory;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\MatterMostAdapterFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

@@ -2,8 +2,10 @@
 
 namespace LinkORB\OrgSync\SynchronizationMediator;
 
-use LinkORB\OrgSync\AdapterFactory\AdapterFactoryInterface;
-use LinkORB\OrgSync\AdapterFactory\AdapterFactoryPoolInterface;
+use LinkORB\OrgSync\DTO\Target;
+use LinkORB\OrgSync\Services\InputHandler;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryInterface;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryPoolInterface;
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\Organization;
 use LinkORB\OrgSync\DTO\User;
@@ -16,21 +18,47 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
     /** @var AdapterFactoryPoolInterface */
     private $adapterFactoryPool;
 
-    public function __construct(AdapterFactoryPoolInterface $adapterFactoryPool)
+    /** @var InputHandler */
+    private $inputHandler;
+
+    public function __construct(AdapterFactoryPoolInterface $adapterFactoryPool, InputHandler $inputHandler)
     {
         $this->adapterFactoryPool = $adapterFactoryPool;
+        $this->inputHandler = $inputHandler;
     }
 
-    public function setAdapterFamily(string $adapterFamily): SynchronizationMediatorInterface
+    /**
+     * @param array $targets
+     * @param array $organizations
+     * @return Organization[]
+     */
+    public function initialize(array $targets, array $organizations): array
     {
-        $this->adapterFactory = $this->adapterFactoryPool->get($adapterFamily);
+        return $this->inputHandler->handle($targets, $organizations);
+    }
+
+    public function setTarget(Target $target): SynchronizationMediatorInterface
+    {
+        $this->adapterFactory = $this->adapterFactoryPool->get($target);
 
         return $this;
     }
 
     public function pushOrganization(Organization $organization): SynchronizationMediatorInterface
     {
-        $this->adapterFactory->createOrganizationPushAdapter()->pushOrganization($organization);
+        foreach ($organization->getTargets() as $target) {
+            $this->adapterFactory = $this->adapterFactoryPool->get($target);
+
+            foreach ($organization->getUsers() as $user) {
+                $this->pushUser($user);
+            }
+
+            foreach ($organization->getGroups() as $group) {
+                $this->pushGroup($group);
+            }
+
+            $this->adapterFactory->createOrganizationPushAdapter()->pushOrganization($organization);
+        }
 
         return $this;
     }

@@ -4,6 +4,7 @@ namespace LinkORB\OrgSync\SynchronizationMediator;
 
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\Organization;
+use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\DTO\User;
 
 interface SynchronizationMediatorInterface
@@ -19,4 +20,6 @@ interface SynchronizationMediatorInterface
     public function setPassword(User $user, string $password): self;
 
     public function pullOrganization(): Organization;
+
+    public function setTarget(Target $target): SynchronizationMediatorInterface;
 }

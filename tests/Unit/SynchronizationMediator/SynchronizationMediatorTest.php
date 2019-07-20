@@ -2,9 +2,9 @@
 
 namespace LinkORB\OrgSync\Tests\Unit\SynchronizationMediator;
 
-use LinkORB\OrgSync\AdapterFactory\AdapterFactoryInterface;
-use LinkORB\OrgSync\AdapterFactory\AdapterFactoryPoolInterface;
-use LinkORB\OrgSync\AdapterFactory\GithubAdapterFactory;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryInterface;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryPoolInterface;
+use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\GithubAdapterFactory;
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\Organization;
 use LinkORB\OrgSync\DTO\User;

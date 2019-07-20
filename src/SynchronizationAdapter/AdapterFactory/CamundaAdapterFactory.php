@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace LinkORB\OrgSync\AdapterFactory;
+namespace LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory;
 
 use BadMethodCallException;
 use GuzzleHttp\Client;
 use LinkORB\OrgSync\DTO\Group;
+use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\DTO\User;
 use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
@@ -28,18 +29,24 @@ class CamundaAdapterFactory implements AdapterFactoryInterface
     /** @var PasswordHelper */
     private $passwordHelper;
 
-    public function __construct(string $baseUri, ?string $authUsername, ?string $authPassword, ?string $defaultPassSalt)
+    public function __construct(?string $defaultPassSalt)
     {
-        $clientOptions = [
-            'base_uri' => $baseUri,
-        ];
+        $this->passwordHelper = $this->getPasswordHelper($defaultPassSalt);
+    }
 
-        if ($authUsername && $authPassword) {
-            $clientOptions['auth'] = [$authUsername, $authPassword];
+    public function setTarget(Target $target): AdapterFactoryInterface
+    {
+        assert($target instanceof Target\Camunda);
+
+        $clientOptions = ['base_uri' => $target->getBaseUrl()];
+
+        if ($target->getAdminUsername() && $target->getAdminPassword()) {
+            $clientOptions['auth'] = [$target->getAdminUsername(), $target->getAdminPassword()];
         }
 
         $this->camundaClient = $this->getClient($clientOptions);
-        $this->passwordHelper = $this->getPasswordHelper($defaultPassSalt);
+
+        return $this;
     }
 
     public function createOrganizationPullAdapter(): OrganizationPullInterface
@@ -77,19 +84,11 @@ class CamundaAdapterFactory implements AdapterFactoryInterface
 
     protected function getClient(array $options): Client
     {
-        if ($this->camundaClient) {
-            return $this->camundaClient;
-        }
-
         return new Client($options);
     }
 
     protected function getPasswordHelper(?string $salt): PasswordHelper
     {
-        if ($this->passwordHelper) {
-            return $this->passwordHelper;
-        }
-
         return new PasswordHelper($salt);
     }
 }

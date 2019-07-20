@@ -4,6 +4,7 @@ namespace LinkORB\OrgSync\Tests\Unit\DTO;
 
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\Organization;
+use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\DTO\User;
 use LinkORB\OrgSync\Tests\Helpers\AbstractGettersTestCase;
 
@@ -19,6 +20,8 @@ class OrganizationTest extends AbstractGettersTestCase
             ['users', [$this->createMock(User::class), $this->createMock(User::class), $this->createMock(User::class)]],
             ['groups', []],
             ['groups', [$this->createMock(Group::class)]],
+            ['targets', [$this->createMock(Target::class), $this->createMock(Target::class)]],
+            ['targets', []],
         ];
     }
 
@@ -28,6 +31,7 @@ class OrganizationTest extends AbstractGettersTestCase
             'name' => 'test',
             'users' => [],
             'groups' => [],
+            'targets' => [],
         ];
     }
 

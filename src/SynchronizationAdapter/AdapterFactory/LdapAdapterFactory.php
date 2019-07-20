@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace LinkORB\OrgSync\AdapterFactory;
+namespace LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory;
 
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;

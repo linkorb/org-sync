@@ -19,11 +19,17 @@ class Organization
      */
     private $groups;
 
-    public function __construct(string $name, array $users = [], array $groups = [])
+    /**
+     * @var Target[]
+     */
+    private $targets;
+
+    public function __construct(string $name, array $users = [], array $groups = [], array $targets = [])
     {
         $this->name = $name;
         $this->users = $users;
         $this->groups = $groups;
+        $this->targets = $targets;
     }
 
     /**
@@ -48,5 +54,13 @@ class Organization
     public function getGroups(): array
     {
         return $this->groups;
+    }
+
+    /**
+     * @return Target[]
+     */
+    public function getTargets(): array
+    {
+        return $this->targets;
     }
 }

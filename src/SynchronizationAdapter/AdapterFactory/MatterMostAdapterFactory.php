@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace LinkORB\OrgSync\AdapterFactory;
+namespace LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory;
 
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
@@ -8,9 +8,9 @@ use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\OrganizationPushInte
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\SetPasswordInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\UserPushInterface;
 
-class GithubAdapterFactory implements AdapterFactoryInterface
+class MatterMostAdapterFactory implements AdapterFactoryInterface
 {
-    public const ADAPTER_KEY = 'github';
+    public const ADAPTER_KEY = 'mattermost';
 
     public function createOrganizationPullAdapter(): OrganizationPullInterface
     {

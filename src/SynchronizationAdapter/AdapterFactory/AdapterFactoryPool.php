@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace LinkORB\OrgSync\AdapterFactory;
+namespace LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory;
 
 use InvalidArgumentException;
+use LinkORB\OrgSync\DTO\Target;
 
 class AdapterFactoryPool implements AdapterFactoryPoolInterface
 {
@@ -16,12 +17,12 @@ class AdapterFactoryPool implements AdapterFactoryPoolInterface
         $this->map = $map;
     }
 
-    public function get(string $key): AdapterFactoryInterface
+    public function get(Target $target): AdapterFactoryInterface
     {
-        if (!isset($this->map[$key])) {
+        if (!isset($this->map[get_class($target)])) {
             throw new InvalidArgumentException('Trying to get non-existing factory');
         }
 
-        return $this->map[$key];
+        return $this->map[get_class($target)]->setTarget($target);
     }
 }
