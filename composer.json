@@ -5,10 +5,12 @@
   "description": "Organization sync library",
   "require": {
     "php": "^7.3",
+    "doctrine/annotations": "^1.6",
     "knplabs/github-api": "^2.11",
     "php-http/guzzle6-adapter": "^1.1",
     "symfony/cache": "^4.3",
     "symfony/property-access": "^4.3",
+    "symfony/property-info": "^4.3",
     "symfony/serializer": "^4.3"
   },
   "require-dev": {

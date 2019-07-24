@@ -34,9 +34,18 @@ class User
      */
     private $properties;
 
+    /**
+     * User constructor.
+     * @param string $username
+     * @param string|null $password
+     * @param string|null $email
+     * @param string|null $displayName
+     * @param string|null $avatar
+     * @param array $properties
+     */
     public function __construct(
         string $username,
-        ?string $password,
+        string $password = null,
         string $email = null,
         string $displayName = null,
         string $avatar = null,

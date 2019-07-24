@@ -2,6 +2,9 @@
 
 namespace LinkORB\OrgSync\DTO;
 
+use LinkORB\OrgSync\Exception\GroupSyncException;
+use LinkORB\OrgSync\Exception\UserSyncException;
+
 class Organization
 {
     /**
@@ -20,16 +23,16 @@ class Organization
     private $groups;
 
     /**
-     * @var Target[]
+     * Organization constructor.
+     * @param string $name
+     * @param User[] $users
+     * @param Group[] $groups
      */
-    private $targets;
-
-    public function __construct(string $name, array $users = [], array $groups = [], array $targets = [])
+    public function __construct(string $name, array $users = [], array $groups = [])
     {
         $this->name = $name;
         $this->users = $users;
         $this->groups = $groups;
-        $this->targets = $targets;
     }
 
     /**
@@ -56,11 +59,25 @@ class Organization
         return $this->groups;
     }
 
-    /**
-     * @return Target[]
-     */
-    public function getTargets(): array
+    public function getGroupByName(string $name): Group
     {
-        return $this->targets;
+        foreach ($this->groups as $group) {
+            if ($group->getName() === $name) {
+                return $group;
+            }
+        }
+
+        throw new GroupSyncException('Linked group not found in organization');
+    }
+
+    public function getUserByName(string $name): User
+    {
+        foreach ($this->users as $user) {
+            if ($user->getUsername() === $name) {
+                return $user;
+            }
+        }
+
+        throw new UserSyncException('Linked user not found in organization');
     }
 }

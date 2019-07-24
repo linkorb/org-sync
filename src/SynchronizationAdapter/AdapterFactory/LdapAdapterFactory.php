@@ -2,6 +2,7 @@
 
 namespace LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory;
 
+use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\OrganizationPushInterface;
@@ -35,5 +36,10 @@ class LdapAdapterFactory implements AdapterFactoryInterface
     public function createOrganizationPushAdapter(): OrganizationPushInterface
     {
         // TODO: Implement createOrganizationPushAdapter() method.
+    }
+
+    public function setTarget(Target $target): AdapterFactoryInterface
+    {
+        // TODO: Implement setTarget() method.
     }
 }

@@ -38,6 +38,16 @@ class Group
      */
     private $targets;
 
+    /**
+     * Group constructor.
+     * @param string $name
+     * @param string $displayName
+     * @param string|null $avatar
+     * @param Group|null $parent
+     * @param User[] $members
+     * @param array $properties
+     * @param array $targets
+     */
     public function __construct(
         string $name,
         string $displayName,
@@ -111,5 +121,26 @@ class Group
     public function getTargets(): array
     {
         return $this->targets;
+    }
+
+    public function setParent(?Group $parent): Group
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    public function addMember(User $member): Group
+    {
+        $this->members[] = $member;
+
+        return $this;
+    }
+
+    public function addTarget(Target $target): Group
+    {
+        $this->targets[] = $target;
+
+        return $this;
     }
 }

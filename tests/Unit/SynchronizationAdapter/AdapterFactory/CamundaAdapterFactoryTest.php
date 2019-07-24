@@ -3,6 +3,7 @@
 namespace LinkORB\OrgSync\Tests\Unit\SynchronizationAdapter\AdapterFactory;
 
 use GuzzleHttp\Client;
+use LinkORB\OrgSync\DTO\Target\Camunda;
 use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\CamundaAdapterFactory;
 use LinkORB\OrgSync\Services\PasswordHelper;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\CamundaGroupPushAdapter;
@@ -30,36 +31,47 @@ class CamundaAdapterFactoryTest extends TestCase
 
         $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getClient']);
         $this->factory->method('getClient')->willReturn($this->httpClient);
-        $this->factory->__construct('test', null, null, null);
+        $this->factory->__construct(null);
+        $this->factory->setTarget(new Camunda(null, null, 'test', ''));
 
         parent::setUp();
     }
 
-    /**
-     * @dataProvider getAdapterFactoryData
-     */
-    public function testConstruct(string $baseUri, ?string $authUsername, ?string $authPassword)
+   public function testConstruct()
     {
         $salt = 'some test salt';
-        $options = ['base_uri' => $baseUri];
 
-        if ($authPassword && $authUsername) {
-            $options['auth'] = [$authUsername, $authPassword];
-        }
+        $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getPasswordHelper']);
 
-        $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getClient', 'getPasswordHelper']);
-        $this->factory
-            ->expects($this->once())
-            ->method('getClient')
-            ->with($options)
-            ->willReturn($this->httpClient);
         $this->factory
             ->expects($this->once())
             ->method('getPasswordHelper')
             ->with($salt)
             ->willReturn($this->passwordHelper);
 
-        $this->factory->__construct($baseUri, $authUsername, $authPassword, $salt);
+        $this->factory->__construct($salt);
+    }
+
+    /**
+     * @dataProvider getAdapterFactoryData
+     */
+    public function testSetTarget(string $baseUri, ?string $authUsername, ?string $authPassword)
+    {
+        $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getClient']);
+
+        $options = ['base_uri' => $baseUri];
+
+        if ($authPassword && $authUsername) {
+            $options['auth'] = [$authUsername, $authPassword];
+        }
+
+        $this->factory
+            ->expects($this->once())
+            ->method('getClient')
+            ->with($options)
+            ->willReturn($this->httpClient);
+
+        $this->factory->setTarget(new Camunda($authPassword, $authUsername, $baseUri, ''));
     }
 
     public function testCreateUserPushAdapter()

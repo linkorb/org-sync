@@ -4,24 +4,25 @@ namespace LinkORB\OrgSync\Services\Target;
 
 use InvalidArgumentException;
 use LinkORB\OrgSync\DTO\Target;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class TargetPool
 {
     /** @var Target[] */
     private $pool;
 
-    /** @var TargetFactory */
-    private $factory;
+    /** @var DenormalizerInterface */
+    private $denormalizer;
 
-    public function __construct(TargetFactory $factory, array $pool = [])
+    public function __construct(DenormalizerInterface $denormalizer, array $pool = [])
     {
-        $this->factory = $factory;
+        $this->denormalizer = $denormalizer;
         $this->pool = $pool;
     }
 
     public function addTarget(array $data): TargetPool
     {
-        $target = $this->factory->create($data);
+        $target = $this->denormalizer->denormalize($data, Target::class);
 
         $this->pool[$target->getName()] = $target;
 
@@ -35,5 +36,10 @@ class TargetPool
         }
 
         return $this->pool[$name];
+    }
+
+    public function all(): array
+    {
+        return $this->pool;
     }
 }

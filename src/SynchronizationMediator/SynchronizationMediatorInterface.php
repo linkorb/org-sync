@@ -9,8 +9,6 @@ use LinkORB\OrgSync\DTO\User;
 
 interface SynchronizationMediatorInterface
 {
-    public function setAdapterFamily(string $adapterFamily): SynchronizationMediatorInterface;
-
     public function pushOrganization(Organization $organization): self;
 
     public function pushGroup(Group $organization): self;
@@ -22,4 +20,6 @@ interface SynchronizationMediatorInterface
     public function pullOrganization(): Organization;
 
     public function setTarget(Target $target): SynchronizationMediatorInterface;
+
+    public function initialize(array $targets, array $organizations): Organization;
 }

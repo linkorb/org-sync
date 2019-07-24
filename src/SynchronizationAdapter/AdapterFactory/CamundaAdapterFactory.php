@@ -21,8 +21,6 @@ use LinkORB\OrgSync\SynchronizationAdapter\UserPush\UserPushInterface;
 
 class CamundaAdapterFactory implements AdapterFactoryInterface
 {
-    public const ADAPTER_KEY = 'camunda';
-
     /** @var Client */
     private $camundaClient;
 

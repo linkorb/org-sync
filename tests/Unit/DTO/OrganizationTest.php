@@ -20,8 +20,6 @@ class OrganizationTest extends AbstractGettersTestCase
             ['users', [$this->createMock(User::class), $this->createMock(User::class), $this->createMock(User::class)]],
             ['groups', []],
             ['groups', [$this->createMock(Group::class)]],
-            ['targets', [$this->createMock(Target::class), $this->createMock(Target::class)]],
-            ['targets', []],
         ];
     }
 
@@ -31,7 +29,6 @@ class OrganizationTest extends AbstractGettersTestCase
             'name' => 'test',
             'users' => [],
             'groups' => [],
-            'targets' => [],
         ];
     }
 

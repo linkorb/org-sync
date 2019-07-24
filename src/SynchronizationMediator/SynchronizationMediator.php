@@ -30,9 +30,9 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
     /**
      * @param array $targets
      * @param array $organizations
-     * @return Organization[]
+     * @return Organization
      */
-    public function initialize(array $targets, array $organizations): array
+    public function initialize(array $targets, array $organizations): Organization
     {
         return $this->inputHandler->handle($targets, $organizations);
     }
@@ -46,19 +46,25 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
 
     public function pushOrganization(Organization $organization): SynchronizationMediatorInterface
     {
-        foreach ($organization->getTargets() as $target) {
-            $this->adapterFactory = $this->adapterFactoryPool->get($target);
+        foreach ($this->inputHandler->getTargets() as $target) {
+            $this->setTarget($target);
 
             foreach ($organization->getUsers() as $user) {
                 $this->pushUser($user);
             }
 
-            foreach ($organization->getGroups() as $group) {
-                $this->pushGroup($group);
-            }
-
             $this->adapterFactory->createOrganizationPushAdapter()->pushOrganization($organization);
         }
+
+        foreach ($organization->getGroups() as $group) {
+            foreach ($group->getTargets() as $target) {
+                $this->setTarget($target);
+
+                $this->pushGroup($group);
+            }
+        }
+
+        $this->adapterFactory = null;
 
         return $this;
     }

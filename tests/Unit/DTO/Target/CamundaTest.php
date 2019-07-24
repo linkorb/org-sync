@@ -16,6 +16,10 @@ class CamundaTest extends AbstractGettersTestCase
             ['adminPassword', ''],
             ['adminPassword', null],
             ['adminPassword', 'p@ssword'],
+            ['name', 'camunda'],
+            ['name', ''],
+            ['baseUrl', 'http://localhost:8080/camunda'],
+            ['baseUrl', ''],
         ];
     }
 

@@ -2,6 +2,13 @@
 
 namespace LinkORB\OrgSync\DTO;
 
+use Symfony\Component\Serializer\Annotation\DiscriminatorMap;
+
+/**
+ * @DiscriminatorMap(typeProperty="type", mapping={
+ *    "camunda"="LinkORB\OrgSync\DTO\Target\Camunda",
+ * })
+ */
 abstract class Target
 {
     /** @var string */
