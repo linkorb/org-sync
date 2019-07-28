@@ -85,7 +85,13 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
 
     public function setPassword(User $user, string $password): SynchronizationMediatorInterface
     {
-        $this->adapterFactory->createSetPasswordAdapter()->setPassword($user, $password);
+        foreach ($this->inputHandler->getTargets() as $target) {
+            $this->setTarget($target);
+
+            $this->adapterFactory->createSetPasswordAdapter()->setPassword($user, $password);
+        }
+
+        $this->adapterFactory = null;
 
         return $this;
     }
