@@ -32,7 +32,7 @@ class CamundaAdapterFactoryTest extends TestCase
         $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getClient']);
         $this->factory->method('getClient')->willReturn($this->httpClient);
         $this->factory->__construct(null);
-        $this->factory->setTarget(new Camunda(null, null, 'test', ''));
+        $this->factory->setTarget(new Camunda('test', ''));
 
         parent::setUp();
     }
@@ -71,7 +71,7 @@ class CamundaAdapterFactoryTest extends TestCase
             ->with($options)
             ->willReturn($this->httpClient);
 
-        $this->factory->setTarget(new Camunda($authPassword, $authUsername, $baseUri, ''));
+        $this->factory->setTarget(new Camunda($baseUri, '', $authPassword, $authUsername));
     }
 
     public function testCreateUserPushAdapter()

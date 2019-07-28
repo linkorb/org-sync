@@ -12,8 +12,12 @@ class Camunda extends Target
     /** @var string|null */
     private $adminPassword;
 
-    public function __construct(?string $adminPassword, ?string $adminUsername, string $baseUrl, string $name)
-    {
+    public function __construct(
+        string $baseUrl,
+        string $name,
+        ?string $adminPassword = null,
+        ?string $adminUsername = null
+    ) {
         $this->adminPassword = $adminPassword;
         $this->adminUsername = $adminUsername;
 

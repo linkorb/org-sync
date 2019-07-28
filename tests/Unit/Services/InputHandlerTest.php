@@ -141,10 +141,10 @@ class InputHandlerTest extends TestCase
         $targets = [];
         foreach ($targetsArray as $name => $target) {
             $targets[$name] = new Target\Camunda(
-                $target['adminPassword'],
-                $target['adminUsername'],
                 $target['baseUrl'],
-                $name
+                $name,
+                $target['adminPassword'],
+                $target['adminUsername']
             );
         }
 

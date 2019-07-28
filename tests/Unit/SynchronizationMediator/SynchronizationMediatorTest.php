@@ -93,8 +93,8 @@ class SynchronizationMediatorTest extends TestCase
         $this->mediator->__construct($this->adapterFactoryPool, $this->inputHandler);
 
         $targets = [
-            new Camunda(null, null, 'test', 'temp'),
-            new Camunda('test', 'user', 'local', 'adapter'),
+            new Camunda('test', 'temp'),
+            new Camunda('local', 'adapter', 'test', 'user'),
         ];
 
         $this->inputHandler->expects($this->once())->method('getTargets')->willReturn($targets);

@@ -52,7 +52,7 @@ class AdapterFactoryPoolTest extends TestCase
     public function getDataProvider(): array
     {
         return [
-            [new Camunda(null, null, 'http://localhost', 'test')],
+            [new Camunda('http://localhost', 'test')],
         ];
     }
 }

@@ -26,10 +26,10 @@ class CamundaTest extends AbstractGettersTestCase
     public function getDefaultArgs(): array
     {
         return [
-            'adminPassword' => null,
-            'adminUsername' => null,
             'baseUrl' => '',
             'name' => '',
+            'adminPassword' => null,
+            'adminUsername' => null,
         ];
     }
 
