@@ -59,7 +59,7 @@ class CamundaAdapterFactoryTest extends TestCase
     {
         $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getClient']);
 
-        $options = ['base_uri' => $baseUri];
+        $options = ['base_uri' => $baseUri, 'exceptions' => false];
 
         if ($authPassword && $authUsername) {
             $options['auth'] = [$authUsername, $authPassword];

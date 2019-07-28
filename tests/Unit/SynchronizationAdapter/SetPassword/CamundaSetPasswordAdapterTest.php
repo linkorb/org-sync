@@ -53,7 +53,7 @@ class CamundaSetPasswordAdapterTest extends TestCase
             ->with(
                 'put',
                 [
-                    sprintf('/user/%s/credentials', $id),
+                    sprintf('user/%s/credentials', $id),
                     [
                         RequestOptions::JSON => [
                             'password' => $password,

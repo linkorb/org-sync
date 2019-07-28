@@ -42,11 +42,11 @@ class CamundaGroupPushAdapterTest extends TestCase
     public function testPushGroup(Group $group, bool $create)
     {
         $consecutiveArgs = [
-            ['get', [sprintf('/group/%s', $group->getName())]],
+            ['get', [sprintf('group/%s', $group->getName())]],
             [
                 $create ? 'post' : 'put',
                 [
-                    '/group/create',
+                    'group/' . ($create ? 'create' : $group->getName()),
                     [
                         RequestOptions::JSON => [
                             'id' => $group->getName(),
@@ -64,7 +64,7 @@ class CamundaGroupPushAdapterTest extends TestCase
         ];
 
         foreach ($group->getMembers() as $key => $member) {
-            $consecutiveArgs[] = ['put', [sprintf('/group/%s/members/%s', $group->getName(), $member->getUsername())]];
+            $consecutiveArgs[] = ['put', [sprintf('group/%s/members/%s', $group->getName(), $member->getUsername())]];
             $returnOnConsecutive[] = $this->createConfiguredMock(
                 ResponseInterface::class,
                 ['getStatusCode' => ($key % 2 === 0) ? 404 : 201]

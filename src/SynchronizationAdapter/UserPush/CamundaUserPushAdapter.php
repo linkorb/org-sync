@@ -40,7 +40,7 @@ final class CamundaUserPushAdapter implements UserPushInterface
     protected function exists(User $user): bool
     {
         try {
-            $response = $this->httpClient->get(sprintf('/user/%s/profile', $user->getUsername()));
+            $response = $this->httpClient->get(sprintf('user/%s/profile', $user->getUsername()));
         } catch (Throwable $exception) {
             throw new SyncHttpException($exception);
         }
@@ -52,7 +52,7 @@ final class CamundaUserPushAdapter implements UserPushInterface
     {
         try {
             $response = $this->httpClient->post(
-                '/user/create',
+                'user/create',
                 [
                     RequestOptions::JSON => [
                         'profile' => [
@@ -78,7 +78,7 @@ final class CamundaUserPushAdapter implements UserPushInterface
     {
         try {
             $response = $this->httpClient->put(
-                sprintf('/user/%s/profile', $user->getUsername()),
+                sprintf('user/%s/profile', $user->getUsername()),
                 [
                     RequestOptions::JSON => [
                         'id' => $user->getUsername(),

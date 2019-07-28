@@ -51,10 +51,10 @@ class CamundaUserPushAdapterTest extends TestCase
             ->expects($this->exactly(2))
             ->method('__call')
             ->withConsecutive(
-                ['get', [sprintf('/user/%s/profile', $id)]],
+                ['get', [sprintf('user/%s/profile', $id)]],
                 [
                     'post',
-                    ['/user/create',
+                    ['user/create',
                         [
                             RequestOptions::JSON => [
                                 'profile' => [
@@ -126,11 +126,11 @@ class CamundaUserPushAdapterTest extends TestCase
             ->expects($this->exactly(2))
             ->method('__call')
             ->withConsecutive(
-                ['get', [sprintf('/user/%s/profile', $id)]],
+                ['get', [sprintf('user/%s/profile', $id)]],
                 [
                     'put',
                     [
-                        sprintf('/user/%s/profile', $id),
+                        sprintf('user/%s/profile', $id),
                         [
                             RequestOptions::JSON => [
                                 'id' => $id,

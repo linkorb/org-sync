@@ -36,7 +36,10 @@ class CamundaAdapterFactory implements AdapterFactoryInterface
     {
         assert($target instanceof Target\Camunda);
 
-        $clientOptions = ['base_uri' => $target->getBaseUrl()];
+        $clientOptions = [
+            'base_uri' => $target->getBaseUrl(),
+            'exceptions' => false,
+        ];
 
         if ($target->getAdminUsername() && $target->getAdminPassword()) {
             $clientOptions['auth'] = [$target->getAdminUsername(), $target->getAdminPassword()];

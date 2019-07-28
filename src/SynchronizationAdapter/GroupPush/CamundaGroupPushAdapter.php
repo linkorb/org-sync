@@ -32,7 +32,7 @@ final class CamundaGroupPushAdapter implements GroupPushInterface
 
         try {
             $response = $this->httpClient->$method(
-                '/group/create',
+                sprintf('group/%s', $method === 'put' ? $group->getName() : 'create'),
                 [
                     RequestOptions::JSON => [
                         'id' => $group->getName(),
@@ -58,7 +58,7 @@ final class CamundaGroupPushAdapter implements GroupPushInterface
     protected function exists(Group $group): bool
     {
         try {
-            $response = $this->httpClient->get(sprintf('/group/%s', $group->getName()));
+            $response = $this->httpClient->get(sprintf('group/%s', $group->getName()));
         } catch (Throwable $exception) {
             throw new SyncHttpException($exception);
         }
@@ -70,7 +70,7 @@ final class CamundaGroupPushAdapter implements GroupPushInterface
     {
         try {
             $this->httpClient->put(
-                sprintf('/group/%s/members/%s', $groupName, $member->getUsername())
+                sprintf('group/%s/members/%s', $groupName, $member->getUsername())
             );
         } catch (Throwable $exception) {
             throw new SyncHttpException($exception);

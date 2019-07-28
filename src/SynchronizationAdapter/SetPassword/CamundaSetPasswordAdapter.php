@@ -34,7 +34,7 @@ final class CamundaSetPasswordAdapter implements SetPasswordInterface
 
         try {
             $response = $this->httpClient->put(
-                sprintf('/user/%s/credentials', $user->getUsername()),
+                sprintf('user/%s/credentials', $user->getUsername()),
                 [
                     RequestOptions::JSON => [
                         'password' => $password,
