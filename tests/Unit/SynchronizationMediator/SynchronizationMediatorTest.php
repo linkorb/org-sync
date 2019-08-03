@@ -174,13 +174,18 @@ class SynchronizationMediatorTest extends TestCase
         $user = $this->createMock(User::class);
         $password = '1234Qwer';
 
+        $this->inputHandler
+            ->expects($this->once())
+            ->method('getTargets')
+            ->willReturn([$this->createMock(Camunda::class)]);
+
         $this->adapterFactory->expects($this->once())->method('createSetPasswordAdapter');
 
         $this->setPasswordAdapter->expects($this->once())->method('setPassword')->with($user, $password)->willReturnSelf();
 
         $this->assertSame(
             $this->mediator,
-            $this->mediator->setTarget($this->createMock(Camunda::class))->setPassword($user, $password)
+            $this->mediator->setPassword($user, $password)
         );
     }
 
