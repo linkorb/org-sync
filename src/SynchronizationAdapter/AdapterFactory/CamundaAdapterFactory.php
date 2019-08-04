@@ -27,9 +27,12 @@ class CamundaAdapterFactory implements AdapterFactoryInterface
     /** @var PasswordHelper */
     private $passwordHelper;
 
+    /** @var string|null */
+    private $defaultPassSalt;
+
     public function __construct(?string $defaultPassSalt)
     {
-        $this->passwordHelper = $this->getPasswordHelper($defaultPassSalt);
+        $this->defaultPassSalt = $defaultPassSalt;
     }
 
     public function setTarget(Target $target): AdapterFactoryInterface
@@ -46,6 +49,7 @@ class CamundaAdapterFactory implements AdapterFactoryInterface
         }
 
         $this->camundaClient = $this->getClient($clientOptions);
+        $this->passwordHelper = $this->getPasswordHelper($this->defaultPassSalt . $target->getName());
 
         return $this;
     }

@@ -37,27 +37,23 @@ class CamundaAdapterFactoryTest extends TestCase
         parent::setUp();
     }
 
-   public function testConstruct()
+    /**
+     * @dataProvider getAdapterFactoryData
+     */
+    public function testSetTarget(string $baseUri, ?string $authUsername, ?string $authPassword)
     {
         $salt = 'some test salt';
 
-        $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getPasswordHelper']);
+        $this->factory = $this->createPartialMock(
+            CamundaAdapterFactory::class,
+            ['getClient', 'getPasswordHelper']
+        );
 
         $this->factory
             ->expects($this->once())
             ->method('getPasswordHelper')
             ->with($salt)
             ->willReturn($this->passwordHelper);
-
-        $this->factory->__construct($salt);
-    }
-
-    /**
-     * @dataProvider getAdapterFactoryData
-     */
-    public function testSetTarget(string $baseUri, ?string $authUsername, ?string $authPassword)
-    {
-        $this->factory = $this->createPartialMock(CamundaAdapterFactory::class, ['getClient']);
 
         $options = ['base_uri' => $baseUri, 'exceptions' => false];
 
@@ -71,6 +67,7 @@ class CamundaAdapterFactoryTest extends TestCase
             ->with($options)
             ->willReturn($this->httpClient);
 
+        $this->factory->__construct($salt);
         $this->factory->setTarget(new Camunda($baseUri, '', $authPassword, $authUsername));
     }
 

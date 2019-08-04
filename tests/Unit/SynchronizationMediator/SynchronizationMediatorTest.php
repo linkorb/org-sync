@@ -6,7 +6,6 @@ use LinkORB\OrgSync\DTO\Target\Camunda;
 use LinkORB\OrgSync\Services\InputHandler;
 use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryPoolInterface;
-use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\GithubAdapterFactory;
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\Organization;
 use LinkORB\OrgSync\DTO\User;

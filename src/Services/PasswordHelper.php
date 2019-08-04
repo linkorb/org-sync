@@ -12,7 +12,7 @@ class PasswordHelper
         $this->salt = $salt;
     }
 
-    public function getDefaultPassword(string $username)
+    public function getDefaultPassword(string $username): string
     {
         return substr(md5($username . $this->salt), 0, 8);
     }
