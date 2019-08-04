@@ -8,7 +8,6 @@ use Exception;
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\User;
 use LinkORB\OrgSync\Exception\GroupSyncException;
-use LinkORB\OrgSync\Exception\SyncHttpException;
 use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\CamundaGroupPushAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -82,7 +81,7 @@ class CamundaGroupPushAdapterTest extends TestCase
 
     public function testPushExistsHttpException()
     {
-        $this->expectException(SyncHttpException::class);
+        $this->expectException(Exception::class);
         $group = $this->getGroup();
 
         $this->httpClient
@@ -95,7 +94,7 @@ class CamundaGroupPushAdapterTest extends TestCase
 
    public function testPushGroupHttpException()
     {
-        $this->expectException(SyncHttpException::class);
+        $this->expectException(Exception::class);
         $group = $this->getGroup();
 
         $this->httpClient

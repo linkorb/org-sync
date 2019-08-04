@@ -6,9 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Exception\SyncHttpException;
 use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
-use Throwable;
 
 final class CamundaGroupPushAdapter implements GroupPushInterface
 {
@@ -30,20 +28,16 @@ final class CamundaGroupPushAdapter implements GroupPushInterface
     {
         $method = $this->exists($group) ? 'put' : 'post';
 
-        try {
-            $response = $this->httpClient->$method(
-                sprintf('group/%s', $method === 'put' ? $group->getName() : 'create'),
-                [
-                    RequestOptions::JSON => [
-                        'id' => $group->getName(),
-                        'name' => $group->getDisplayName(),
-                        'type' => $group->getProperties()[static::CAMUNDA_GROUP_TYPE] ?? null,
-                    ],
-                ]
-            );
-        } catch (Throwable $exception) {
-            throw new SyncHttpException($exception);
-        }
+        $response = $this->httpClient->$method(
+            sprintf('group/%s', $method === 'put' ? $group->getName() : 'create'),
+            [
+                RequestOptions::JSON => [
+                    'id' => $group->getName(),
+                    'name' => $group->getDisplayName(),
+                    'type' => $group->getProperties()[static::CAMUNDA_GROUP_TYPE] ?? null,
+                ],
+            ]
+        );
 
         $this->responseChecker->assertResponse($response);
 
@@ -57,23 +51,15 @@ final class CamundaGroupPushAdapter implements GroupPushInterface
 
     protected function exists(Group $group): bool
     {
-        try {
-            $response = $this->httpClient->get(sprintf('group/%s', $group->getName()));
-        } catch (Throwable $exception) {
-            throw new SyncHttpException($exception);
-        }
+        $response = $this->httpClient->get(sprintf('group/%s', $group->getName()));
 
         return $response->getStatusCode() === 200;
     }
 
     private function addMember(string $groupName, User $member): void
     {
-        try {
-            $this->httpClient->put(
-                sprintf('group/%s/members/%s', $groupName, $member->getUsername())
-            );
-        } catch (Throwable $exception) {
-            throw new SyncHttpException($exception);
-        }
+        $this->httpClient->put(
+            sprintf('group/%s/members/%s', $groupName, $member->getUsername())
+        );
     }
 }

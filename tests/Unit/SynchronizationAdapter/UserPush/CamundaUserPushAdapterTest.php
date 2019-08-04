@@ -3,12 +3,9 @@
 namespace LinkORB\OrgSync\Tests\Unit\SynchronizationAdapter\UserPush;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Exception\SyncHttpException;
 use LinkORB\OrgSync\Exception\UserSyncException;
 use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
@@ -97,23 +94,6 @@ class CamundaUserPushAdapterTest extends TestCase
         $this->expectException(UserSyncException::class);
         $this->expectExceptionMessage($body);
         $this->expectExceptionCode($statusCode);
-
-        $this->adapter->pushUser($this->createConfiguredMock(User::class, ['getProperties' => []]));
-    }
-
-    /**
-     * @dataProvider getExceptionData
-     */
-    public function testCreateUserSyncException(bool $exists)
-    {
-        $guzzleException = new ConnectException('no connection', $this->createMock(Request::class));
-
-        $this->httpClient->method('__call')->willReturnOnConsecutiveCalls(
-            $this->createConfiguredMock(Response::class, ['getStatusCode' => $exists ? 200 : 404]),
-            $this->throwException($guzzleException)
-        );
-
-        $this->expectExceptionObject(new SyncHttpException($guzzleException));
 
         $this->adapter->pushUser($this->createConfiguredMock(User::class, ['getProperties' => []]));
     }
