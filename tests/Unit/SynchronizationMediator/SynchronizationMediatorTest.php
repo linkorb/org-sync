@@ -4,6 +4,7 @@ namespace LinkORB\OrgSync\Tests\Unit\SynchronizationMediator;
 
 use LinkORB\OrgSync\DTO\Target\Camunda;
 use LinkORB\OrgSync\Services\InputHandler;
+use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryPoolInterface;
 use LinkORB\OrgSync\DTO\Group;
@@ -44,6 +45,9 @@ class SynchronizationMediatorTest extends TestCase
     /** @var OrganizationPullInterface|MockObject */
     private $organizationPullAdapter;
 
+    /** @var SyncRemoverInterface|MockObject */
+    private $syncRemover;
+
     /** @var InputHandler|MockObject */
     private $inputHandler;
 
@@ -55,6 +59,7 @@ class SynchronizationMediatorTest extends TestCase
         $this->userPushAdapter = $this->createMock(UserPushInterface::class);
         $this->setPasswordAdapter = $this->createMock(SetPasswordInterface::class);
         $this->organizationPullAdapter = $this->createMock(OrganizationPullInterface::class);
+        $this->syncRemover = $this->createMock(SyncRemoverInterface::class);
 
         $this->adapterFactory = $this->createConfiguredMock(AdapterFactoryInterface::class, [
             'createOrganizationPushAdapter' => $this->organizationPushAdapter,
@@ -62,6 +67,7 @@ class SynchronizationMediatorTest extends TestCase
             'createUserPushAdapter' => $this->userPushAdapter,
             'createSetPasswordAdapter' => $this->setPasswordAdapter,
             'createOrganizationPullAdapter' => $this->organizationPullAdapter,
+            'createSyncRemover' => $this->syncRemover,
         ]);
 
         $this->adapterFactoryPool = $this->createMock(AdapterFactoryPoolInterface::class);
@@ -130,7 +136,13 @@ class SynchronizationMediatorTest extends TestCase
             ->method('pushGroup')
             ->withConsecutive(...$groupsConsecutive);
 
+        $this->adapterFactory->expects($this->exactly(count($targets)))->method('createSyncRemover');
         $this->adapterFactory->expects($this->exactly(count($targets)))->method('createOrganizationPushAdapter');
+
+        $this->syncRemover
+            ->expects($this->exactly(count($targets)))
+            ->method('removeNonExists')
+            ->with($organization);
 
         $this->organizationPushAdapter
             ->expects($this->exactly(count($targets)))

@@ -7,8 +7,15 @@ use GuzzleHttp\Client;
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\DTO\User;
+use LinkORB\OrgSync\Services\Camunda\CamundaGroupMapper;
+use LinkORB\OrgSync\Services\Camunda\CamundaGroupMemberProvider;
+use LinkORB\OrgSync\Services\Camunda\CamundaGroupProvider;
+use LinkORB\OrgSync\Services\Camunda\CamundaUserMapper;
+use LinkORB\OrgSync\Services\Camunda\CamundaUserProvider;
 use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
+use LinkORB\OrgSync\Services\SyncRemover\CamundaSyncRemover;
+use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\CamundaGroupPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
@@ -85,6 +92,16 @@ class CamundaAdapterFactory implements AdapterFactoryInterface
     public function createOrganizationPushAdapter(): OrganizationPushInterface
     {
         return new CamundaOrganizationPushAdapter();
+    }
+
+    public function createSyncRemover(): SyncRemoverInterface
+    {
+        $userProvider = new CamundaUserProvider($this->camundaClient, new CamundaUserMapper());
+        $groupMapper = new CamundaGroupMapper();
+        $groupProvider = new CamundaGroupProvider($this->camundaClient, $groupMapper);
+        $userGroupProvider = new CamundaGroupMemberProvider($this->camundaClient, $groupMapper);
+
+        return new CamundaSyncRemover($userProvider, $groupProvider, $userGroupProvider, $this->camundaClient);
     }
 
     protected function getClient(array $options): Client

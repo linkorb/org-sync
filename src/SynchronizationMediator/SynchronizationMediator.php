@@ -53,6 +53,7 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
                 $this->pushUser($user);
             }
 
+            $this->adapterFactory->createSyncRemover()->removeNonExists($organization);
             $this->adapterFactory->createOrganizationPushAdapter()->pushOrganization($organization);
         }
 
