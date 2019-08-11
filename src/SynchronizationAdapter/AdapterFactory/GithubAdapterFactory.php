@@ -3,6 +3,7 @@
 namespace LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory;
 
 use LinkORB\OrgSync\DTO\Target;
+use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\OrganizationPushInterface;
@@ -41,5 +42,10 @@ class GithubAdapterFactory implements AdapterFactoryInterface
     public function createOrganizationPushAdapter(): OrganizationPushInterface
     {
         // TODO: Implement createOrganizationPushAdapter() method.
+    }
+
+    public function createSyncRemover(): SyncRemoverInterface
+    {
+        // TODO: Implement createSyncRemover() method.
     }
 }
