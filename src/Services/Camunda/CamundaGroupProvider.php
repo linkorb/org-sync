@@ -32,7 +32,7 @@ class CamundaGroupProvider
 
         $groups = [];
 
-        foreach (json_decode($response->getBody()->getContents()) as $group) {
+        foreach (json_decode($response->getBody()->getContents(), true) as $group) {
             $groupDto = $this->mapper->map($group);
 
             $groups[$groupDto->getName()] = $groupDto;

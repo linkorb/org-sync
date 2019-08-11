@@ -32,7 +32,7 @@ class CamundaUserProvider
 
         $users = [];
 
-        foreach (json_decode($response->getBody()->getContents()) as $user) {
+        foreach (json_decode($response->getBody()->getContents(), true) as $user) {
             $userDto = $this->mapper->map($user);
 
             $users[$userDto->getUsername()] = $userDto;
