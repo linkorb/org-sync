@@ -5,10 +5,8 @@ namespace LinkORB\OrgSync\SynchronizationAdapter\UserPush;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Exception\SyncHttpException;
 use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
-use Throwable;
 
 final class CamundaUserPushAdapter implements UserPushInterface
 {
@@ -39,58 +37,46 @@ final class CamundaUserPushAdapter implements UserPushInterface
 
     protected function exists(User $user): bool
     {
-        try {
-            $response = $this->httpClient->get(sprintf('user/%s/profile', $user->getUsername()));
-        } catch (Throwable $exception) {
-            throw new SyncHttpException($exception);
-        }
+        $response = $this->httpClient->get(sprintf('user/%s/profile', $user->getUsername()));
 
         return $response->getStatusCode() === 200;
     }
 
     protected function create(User $user): void
     {
-        try {
-            $response = $this->httpClient->post(
-                'user/create',
-                [
-                    RequestOptions::JSON => [
-                        'profile' => [
-                            'id' => $user->getUsername(),
-                            'firstName' => $user->getProperties()['firstName'] ?? null,
-                            'lastName' => $user->getProperties()['lastName'] ?? null,
-                            'email' => $user->getEmail(),
-                        ],
-                        'credentials' => [
-                            'password' => $this->passwordHelper->getDefaultPassword($user->getUsername()),
-                        ],
+        $response = $this->httpClient->post(
+            'user/create',
+            [
+                RequestOptions::JSON => [
+                    'profile' => [
+                        'id' => $user->getUsername(),
+                        'firstName' => $user->getProperties()['firstName'] ?? null,
+                        'lastName' => $user->getProperties()['lastName'] ?? null,
+                        'email' => $user->getEmail(),
                     ],
-                ]
-            );
-        } catch (Throwable $exception) {
-            throw new SyncHttpException($exception);
-        }
+                    'credentials' => [
+                        'password' => $this->passwordHelper->getDefaultPassword($user->getUsername()),
+                    ],
+                ],
+            ]
+        );
 
         $this->responseChecker->assertResponse($response);
     }
 
     protected function update(User $user): void
     {
-        try {
-            $response = $this->httpClient->put(
-                sprintf('user/%s/profile', $user->getUsername()),
-                [
-                    RequestOptions::JSON => [
-                        'id' => $user->getUsername(),
-                        'firstName' => $user->getProperties()['firstName'] ?? null,
-                        'lastName' => $user->getProperties()['lastName'] ?? null,
-                        'email' => $user->getEmail(),
-                    ],
-                ]
-            );
-        } catch (Throwable $exception) {
-            throw new SyncHttpException($exception);
-        }
+        $response = $this->httpClient->put(
+            sprintf('user/%s/profile', $user->getUsername()),
+            [
+                RequestOptions::JSON => [
+                    'id' => $user->getUsername(),
+                    'firstName' => $user->getProperties()['firstName'] ?? null,
+                    'lastName' => $user->getProperties()['lastName'] ?? null,
+                    'email' => $user->getEmail(),
+                ],
+            ]
+        );
 
         $this->responseChecker->assertResponse($response);
     }

@@ -3,16 +3,13 @@
 namespace LinkORB\OrgSync\Tests\Unit\SynchronizationAdapter\SetPassword;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Exception\SyncHttpException;
 use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\CamundaSetPasswordAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class CamundaSetPasswordAdapterTest extends TestCase
@@ -65,17 +62,5 @@ class CamundaSetPasswordAdapterTest extends TestCase
             ->willReturn($this->createConfiguredMock(ResponseInterface::class, ['getStatusCode' => 200]));
 
         $this->assertSame($this->adapter, $this->adapter->setPassword($user, $password));
-    }
-
-    public function testSetPasswordHttpException()
-    {
-        $user = $this->createMock(User::class);
-        $guzzleException = new ConnectException('', $this->createMock(RequestInterface::class));
-
-        $this->httpClient->method('__call')->willThrowException($guzzleException);
-
-        $this->expectExceptionObject(new SyncHttpException($guzzleException));
-
-        $this->adapter->setPassword($user, '');
     }
 }
