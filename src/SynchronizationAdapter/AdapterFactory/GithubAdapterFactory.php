@@ -2,50 +2,65 @@
 
 namespace LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory;
 
+use BadMethodCallException;
+use Github\Client;
 use LinkORB\OrgSync\DTO\Target;
+use LinkORB\OrgSync\Services\SyncRemover\GithubSyncRemover;
 use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;
+use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GithubGroupPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
-use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\OrganizationPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\SetPasswordInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\UserPushInterface;
 
 class GithubAdapterFactory implements AdapterFactoryInterface
 {
-    public const ADAPTER_KEY = 'github';
+    /**
+     * @var Client
+     */
+    private $client;
 
-    public function createOrganizationPullAdapter(): OrganizationPullInterface
+    public function __construct(Client $client)
     {
-        // TODO: Implement createOrganizationPullAdapter() method.
+        $this->client = $client;
     }
 
     public function setTarget(Target $target): AdapterFactoryInterface
     {
-        // TODO: Implement setTarget() method.
+        assert($target instanceof Target\Github);
+
+        $this->client->authenticate($target->getToken());
+
+        return $this;
+    }
+
+    public function createOrganizationPullAdapter(): OrganizationPullInterface
+    {
+        throw new BadMethodCallException('Not implemented yet');
     }
 
     public function createGroupPushAdapter(): GroupPushInterface
     {
-        // TODO: Implement createGroupPushAdapter() method.
+        return new GithubGroupPushAdapter($this->client);
     }
 
     public function createUserPushAdapter(): UserPushInterface
     {
-        // TODO: Implement createUserPushAdapter() method.
+        throw new BadMethodCallException('Not implemented yet');
     }
 
     public function createSetPasswordAdapter(): SetPasswordInterface
     {
-        // TODO: Implement createSetPasswordAdapter() method.
-    }
-
-    public function createOrganizationPushAdapter(): OrganizationPushInterface
-    {
-        // TODO: Implement createOrganizationPushAdapter() method.
+        throw new BadMethodCallException('Not implemented yet');
     }
 
     public function createSyncRemover(): SyncRemoverInterface
     {
-        // TODO: Implement createSyncRemover() method.
+        return new GithubSyncRemover($this->client);
+    }
+
+    public function supports(string $action): bool
+    {
+        return $action === Target::GROUP_PUSH;
     }
 }

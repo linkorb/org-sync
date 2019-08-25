@@ -2,7 +2,9 @@
 
 namespace LinkORB\OrgSync\Tests\Unit\SynchronizationMediator;
 
+use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\DTO\Target\Camunda;
+use LinkORB\OrgSync\Exception\SyncTargetException;
 use LinkORB\OrgSync\Services\InputHandler;
 use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryInterface;
@@ -30,9 +32,6 @@ class SynchronizationMediatorTest extends TestCase
     /** @var AdapterFactoryPoolInterface|MockObject */
     private $adapterFactoryPool;
 
-    /** @var OrganizationPushInterface|MockObject */
-    private $organizationPushAdapter;
-
     /** @var GroupPushInterface|MockObject */
     private $groupPushAdapter;
 
@@ -54,7 +53,6 @@ class SynchronizationMediatorTest extends TestCase
     protected function setUp(): void
     {
         $this->inputHandler = $this->createMock(InputHandler::class);
-        $this->organizationPushAdapter = $this->createMock(OrganizationPushInterface::class);
         $this->groupPushAdapter = $this->createMock(GroupPushInterface::class);
         $this->userPushAdapter = $this->createMock(UserPushInterface::class);
         $this->setPasswordAdapter = $this->createMock(SetPasswordInterface::class);
@@ -62,7 +60,6 @@ class SynchronizationMediatorTest extends TestCase
         $this->syncRemover = $this->createMock(SyncRemoverInterface::class);
 
         $this->adapterFactory = $this->createConfiguredMock(AdapterFactoryInterface::class, [
-            'createOrganizationPushAdapter' => $this->organizationPushAdapter,
             'createGroupPushAdapter' => $this->groupPushAdapter,
             'createUserPushAdapter' => $this->userPushAdapter,
             'createSetPasswordAdapter' => $this->setPasswordAdapter,
@@ -102,7 +99,7 @@ class SynchronizationMediatorTest extends TestCase
             new Camunda('local', 'adapter', 'test', 'user'),
         ];
 
-        $this->inputHandler->expects($this->once())->method('getTargets')->willReturn($targets);
+        $this->inputHandler->expects($this->exactly(2))->method('getTargets')->willReturn($targets);
         $users = [$this->createMock(User::class), $this->createMock(User::class), $this->createMock(User::class)];
         $groups = [$this->createConfiguredMock(Group::class, ['getTargets' => $targets])];
         $organization = $this->createConfiguredMock(Organization::class, [
@@ -115,11 +112,11 @@ class SynchronizationMediatorTest extends TestCase
         }, $targets);
 
         foreach ($groups as $group) {
-            $targetsConsecutive = array_merge($targetsConsecutive, $targetsConsecutive);
+            $targetsConsecutive = array_merge($targetsConsecutive, $targetsConsecutive, $targetsConsecutive);
         }
 
         $this->adapterFactoryPool
-            ->expects($this->exactly(count($targets) * (count($groups) + 1)))
+            ->expects($this->exactly(count($targets) * (count($groups) + 2)))
             ->method('get')
             ->withConsecutive(...$targetsConsecutive);
 
@@ -137,19 +134,35 @@ class SynchronizationMediatorTest extends TestCase
             ->withConsecutive(...$groupsConsecutive);
 
         $this->adapterFactory->expects($this->exactly(count($targets)))->method('createSyncRemover');
-        $this->adapterFactory->expects($this->exactly(count($targets)))->method('createOrganizationPushAdapter');
 
         $this->syncRemover
             ->expects($this->exactly(count($targets)))
             ->method('removeNonExists')
             ->with($organization);
 
-        $this->organizationPushAdapter
-            ->expects($this->exactly(count($targets)))
-            ->method('pushOrganization')
-            ->with($organization)->willReturnSelf();
-
         $this->assertSame($this->mediator, $this->mediator->pushOrganization($organization));
+    }
+
+    public function testOrganizationPushNotSupported()
+    {
+        $targets = [
+            new Camunda('', ''),
+            new Camunda('', ''),
+        ];
+
+        $this->inputHandler->method('getTargets')->willReturn($targets);
+
+        $users = [$this->createMock(User::class), $this->createMock(User::class), $this->createMock(User::class)];
+        $groups = [$this->createConfiguredMock(Group::class, ['getTargets' => $targets])];
+
+        $this->adapterFactory->method('supports')->willReturn(false);
+        $this->adapterFactory->expects($this->never())->method('createUserPushAdapter');
+        $this->adapterFactory->expects($this->never())->method('createGroupPushAdapter');
+
+        $this->mediator->pushOrganization($this->createConfiguredMock(Organization::class, [
+            'getUsers' => $users,
+            'getGroups' => $groups,
+        ]));
     }
 
     public function testPushGroup()
@@ -157,6 +170,7 @@ class SynchronizationMediatorTest extends TestCase
         $group = $this->createMock(Group::class);
 
         $this->adapterFactory->expects($this->once())->method('createGroupPushAdapter');
+        $this->adapterFactory->expects($this->once())->method('supports')->with(Target::GROUP_PUSH)->willReturn(true);
 
         $this->groupPushAdapter->expects($this->once())->method('pushGroup')->with($group)->willReturnSelf();
 
@@ -171,6 +185,7 @@ class SynchronizationMediatorTest extends TestCase
         $user = $this->createMock(User::class);
 
         $this->adapterFactory->expects($this->once())->method('createUserPushAdapter');
+        $this->adapterFactory->expects($this->once())->method('supports')->with(Target::USER_PUSH)->willReturn(true);
 
         $this->userPushAdapter->expects($this->once())->method('pushUser')->with($user)->willReturnSelf();
 
@@ -185,14 +200,39 @@ class SynchronizationMediatorTest extends TestCase
         $user = $this->createMock(User::class);
         $password = '1234Qwer';
 
+        $targets = [
+            $this->createMock(Camunda::class),
+            $this->createMock(Camunda::class),
+            $this->createMock(Camunda::class),
+            $this->createMock(Camunda::class),
+        ];
+
+        $targetSupports = array_map(function (){return (bool) random_int(0, 1);}, $targets);
+
+        $expectedTargets = [];
+        foreach ($targets as $key => $target) {
+            if ($targetSupports[$key]) {
+                $expectedTargets[] = $target;
+            }
+        }
+
         $this->inputHandler
             ->expects($this->once())
             ->method('getTargets')
-            ->willReturn([$this->createMock(Camunda::class)]);
+            ->willReturn($targets);
 
-        $this->adapterFactory->expects($this->once())->method('createSetPasswordAdapter');
+        $this->adapterFactory->expects($this->exactly(count($expectedTargets)))->method('createSetPasswordAdapter');
+        $this->adapterFactory
+            ->expects($this->exactly(count($targetSupports)))
+            ->method('supports')
+            ->with(Target::SET_PASSWORD)
+            ->willReturnOnConsecutiveCalls(...$targetSupports);
 
-        $this->setPasswordAdapter->expects($this->once())->method('setPassword')->with($user, $password)->willReturnSelf();
+        $this->setPasswordAdapter
+            ->expects($this->exactly(count($expectedTargets)))
+            ->method('setPassword')
+            ->with($user, $password)
+            ->willReturnSelf();
 
         $this->assertSame(
             $this->mediator,
@@ -203,6 +243,11 @@ class SynchronizationMediatorTest extends TestCase
     public function testPullOrganization()
     {
         $this->adapterFactory->expects($this->once())->method('createOrganizationPullAdapter');
+        $this->adapterFactory
+            ->expects($this->once())
+            ->method('supports')
+            ->with(Target::PULL_ORGANIZATION)
+            ->willReturn(true);
 
         $organization = $this->createMock(Organization::class);
 
@@ -212,5 +257,18 @@ class SynchronizationMediatorTest extends TestCase
             $organization,
             $this->mediator->setTarget($this->createMock(Camunda::class))->pullOrganization()
         );
+    }
+
+    public function testPullNotSupported()
+    {
+        $this->adapterFactory
+            ->expects($this->once())
+            ->method('supports')
+            ->with(Target::PULL_ORGANIZATION)
+            ->willReturn(false);
+
+        $this->expectException(SyncTargetException::class);
+
+        $this->mediator->setTarget($this->createMock(Camunda::class))->pullOrganization();
     }
 }

@@ -41,7 +41,6 @@ final class CamundaGroupPushAdapter implements GroupPushInterface
 
         $this->responseChecker->assertResponse($response);
 
-        // TODO: remove old members
         foreach ($group->getMembers() as $member) {
             $this->addMember($group->getName(), $member);
         }

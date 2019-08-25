@@ -11,6 +11,11 @@ use Symfony\Component\Serializer\Annotation\DiscriminatorMap;
  */
 abstract class Target
 {
+    public const USER_PUSH = 'push_user';
+    public const GROUP_PUSH = 'push_group';
+    public const SET_PASSWORD = 'set_password';
+    public const PULL_ORGANIZATION = 'organization_pull';
+
     /** @var string */
     private $baseUrl;
 

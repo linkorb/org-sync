@@ -3,11 +3,11 @@
 namespace LinkORB\OrgSync\Tests\Unit\SynchronizationAdapter\AdapterFactory;
 
 use GuzzleHttp\Client;
+use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\DTO\Target\Camunda;
 use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\CamundaAdapterFactory;
 use LinkORB\OrgSync\Services\PasswordHelper;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\CamundaGroupPushAdapter;
-use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\CamundaOrganizationPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\CamundaSetPasswordAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\CamundaUserPushAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -86,11 +86,6 @@ class CamundaAdapterFactoryTest extends TestCase
         $this->assertInstanceOf(CamundaSetPasswordAdapter::class, $this->factory->createSetPasswordAdapter());
     }
 
-    public function testCreateOrganizationPushAdapter()
-    {
-        $this->assertInstanceOf(CamundaOrganizationPushAdapter::class, $this->factory->createOrganizationPushAdapter());
-    }
-
     public function testCreateGroupPushAdapter()
     {
        $this->assertInstanceOf(CamundaGroupPushAdapter::class, $this->factory->createGroupPushAdapter());
@@ -103,6 +98,25 @@ class CamundaAdapterFactoryTest extends TestCase
             ['http://test.com', 'name123', null],
             ['http://test.com', null, '123qwe'],
             ['https://temp.nl', 'user', 'p@ssword'],
+        ];
+    }
+
+    /**
+     * @dataProvider getSupportsData
+     */
+    public function testSupports(string $action, bool $expected)
+    {
+        $this->assertEquals($expected, $this->factory->supports($action));
+    }
+
+    public function getSupportsData(): array
+    {
+        return [
+            [Target::GROUP_PUSH, true],
+            [Target::PULL_ORGANIZATION, false],
+            [Target::USER_PUSH, true],
+            [Target::SET_PASSWORD, true],
+            [Target::class, false],
         ];
     }
 }

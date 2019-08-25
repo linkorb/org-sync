@@ -4,6 +4,7 @@ namespace LinkORB\OrgSync\Services;
 
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\Organization;
+use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\DTO\User;
 use LinkORB\OrgSync\Services\Target\TargetPool;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -67,6 +68,9 @@ class InputHandler
         return $organizationDto;
     }
 
+    /**
+     * @return Target[]
+     */
     public function getTargets(): array
     {
         return $this->targetsPool->all();
