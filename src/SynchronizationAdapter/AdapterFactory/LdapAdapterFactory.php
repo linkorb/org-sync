@@ -6,14 +6,11 @@ use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
-use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\OrganizationPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\SetPasswordInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\UserPushInterface;
 
 class LdapAdapterFactory implements AdapterFactoryInterface
 {
-    public const ADAPTER_KEY = 'ldap';
-
     public function createOrganizationPullAdapter(): OrganizationPullInterface
     {
         // TODO: Implement createOrganizationPullAdapter() method.
@@ -34,11 +31,6 @@ class LdapAdapterFactory implements AdapterFactoryInterface
         // TODO: Implement createSetPasswordAdapter() method.
     }
 
-    public function createOrganizationPushAdapter(): OrganizationPushInterface
-    {
-        // TODO: Implement createOrganizationPushAdapter() method.
-    }
-
     public function setTarget(Target $target): AdapterFactoryInterface
     {
         // TODO: Implement setTarget() method.
@@ -47,5 +39,10 @@ class LdapAdapterFactory implements AdapterFactoryInterface
     public function createSyncRemover(): SyncRemoverInterface
     {
         // TODO: Implement createSyncRemover() method.
+    }
+
+    public function supports(string $action): bool
+    {
+        return false;
     }
 }

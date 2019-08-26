@@ -11,6 +11,8 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class InputHandler
 {
+    public const GITHUB_ORGANIZATION = 'github_organization';
+
     /** @var TargetPool */
     private $targetsPool;
 
@@ -60,6 +62,8 @@ class InputHandler
         );
 
         foreach ($organizationDto->getGroups() as $group) {
+            $group->addProperty(static::GITHUB_ORGANIZATION, $organizationDto->getName(), false);
+
             $this->handleGroupParents($groupsParents, $group, $organizationDto);
             $this->handleGroupMembers($groupsMembers, $group, $organizationDto);
             $this->handleGroupTargets($groupsTargets, $group);

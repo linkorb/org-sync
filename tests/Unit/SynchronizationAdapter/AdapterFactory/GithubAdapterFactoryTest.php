@@ -61,7 +61,7 @@ class GithubAdapterFactoryTest extends TestCase
     {
         $token = '123qwetest';
 
-        $this->client->expects($this->once())->method('authenticate')->with($token);
+        $this->client->expects($this->once())->method('authenticate')->with($token, Client::AUTH_HTTP_TOKEN);
 
         $this->factory->setTarget(new Target\Github('', '', $token));
     }

@@ -50,7 +50,12 @@ class InputHandlerTest extends TestCase
         $targetDtos = OrganizationDataProvider::transformToTargets($targets);
         /** @var User[] $users */
         $userDtos = OrganizationDataProvider::transformToUsers($organization['users']);
-        $groups = OrganizationDataProvider::transformToGroups($organization['groups'], $userDtos, $targetDtos);
+        $groups = OrganizationDataProvider::transformToGroups(
+            $organization['groups'],
+            $userDtos,
+            $targetDtos,
+            $organization['name']
+        );
 
         $this->assertEquals(
             new Organization($organization['name'], $userDtos, $groups),

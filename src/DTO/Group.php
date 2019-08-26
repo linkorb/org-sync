@@ -115,6 +115,13 @@ class Group
         return $this->properties;
     }
 
+    public function addProperty(string $key, string $value, bool $override = true): Group
+    {
+        $this->properties[$key] = ($override || !isset($this->properties[$key])) ? $value : $this->properties[$key];
+
+        return $this;
+    }
+
     /**
      * @return Target[]
      */

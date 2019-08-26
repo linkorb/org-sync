@@ -7,6 +7,7 @@ use Github\Client;
 use Http\Client\Exception\TransferException;
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\User;
+use LinkORB\OrgSync\Services\InputHandler;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GithubGroupPushAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -34,6 +35,7 @@ class GithubGroupPushAdapterTest extends TestCase
 
     public function testCreateGroup()
     {
+        $orgName = 'test113';
         $name = 'testing';
         $membersData = [
             'Tom',
@@ -43,12 +45,11 @@ class GithubGroupPushAdapterTest extends TestCase
 
         $params = [
             'name' => $name,
-            'parent_team_id' => null,
         ];
 
         $group = new Group($name, '', null, null, array_map(function (string $username) {
             return new User($username);
-        }, $membersData));
+        }, $membersData), [InputHandler::GITHUB_ORGANIZATION => $orgName]);
 
         $team = $this->createMock(Teams::class);
 
@@ -58,9 +59,9 @@ class GithubGroupPushAdapterTest extends TestCase
 
         $team->expects($this->once())
             ->method('update')
-            ->with($name, $params)
+            ->with($orgName, $params)
             ->willThrowException(new TransferException());
-        $team->expects($this->once())->method('create')->with($name, $params);
+        $team->expects($this->once())->method('create')->with($orgName, $params);
 
         $team->expects($this->exactly(count($membersData)))
             ->method('addMember')
@@ -73,7 +74,9 @@ class GithubGroupPushAdapterTest extends TestCase
 
     public function testUpdate()
     {
+        $orgName = 'test12';
         $group = new Group('name', '');
+        $group->addProperty(InputHandler::GITHUB_ORGANIZATION, $orgName);
 
         $team = $this->createMock(Teams::class);
 

@@ -7,6 +7,7 @@ use Symfony\Component\Serializer\Annotation\DiscriminatorMap;
 /**
  * @DiscriminatorMap(typeProperty="type", mapping={
  *    "camunda"="LinkORB\OrgSync\DTO\Target\Camunda",
+ *    "github"="LinkORB\OrgSync\DTO\Target\Github",
  * })
  */
 abstract class Target

@@ -29,7 +29,7 @@ class GithubAdapterFactory implements AdapterFactoryInterface
     {
         assert($target instanceof Target\Github);
 
-        $this->client->authenticate($target->getToken());
+        $this->client->authenticate($target->getToken(), Client::AUTH_HTTP_TOKEN);
 
         return $this;
     }
