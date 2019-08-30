@@ -31,18 +31,19 @@ class GithubSyncRemover implements SyncRemoverInterface
 
         foreach ($this->client->teams()->all($organization->getName()) as $group) {
             $teamName = $group['name'];
+            $teamId = $group['id'];
 
             if (!isset($groupsToSync[$teamName])) {
-                $this->client->team()->remove($teamName);
+                $this->client->team()->remove($teamId);
 
                 continue;
             }
 
-            $members = $this->client->team()->members($teamName);
+            $members = $this->client->team()->members($teamId);
 
             foreach ($members as $member) {
-                if (!isset($orgUsersToSync[$member])) {
-                    $this->client->team()->removeMember($teamName, $member);
+                if (!isset($orgUsersToSync[$member['login']])) {
+                    $this->client->team()->removeMember($teamId, $member['login']);
                 }
             }
         }

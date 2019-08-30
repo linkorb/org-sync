@@ -37,6 +37,10 @@ class GithubSyncRemoverTest extends TestCase
      */
     public function testRemoveNonExists(array $usersArray, array $teamMembers, array $orgGroups)
     {
+        foreach ($teamMembers as $teamName => &$memberData) {
+            $memberData['teamName'] = $teamName;
+        }
+
         $orgName = 'TempOrg';
 
         $orgGroupDtos = array_map(function (string $name) {
@@ -50,14 +54,14 @@ class GithubSyncRemoverTest extends TestCase
         );
 
         $expectations = [];
-        foreach ($teamMembers as $team => $members) {
+        foreach ($teamMembers as $team => $teamData) {
             if (!in_array($team, $orgGroups)) {
                 continue;
             }
 
-            foreach ($members as $member) {
+            foreach ($teamData['members'] as $member) {
                 if (!in_array($member, $usersArray)) {
-                    $expectations[] = [$team, $member];
+                    $expectations[] = [$teamData['id'], $member];
                 }
             }
         }
@@ -66,9 +70,9 @@ class GithubSyncRemoverTest extends TestCase
         $teams = $this->createConfiguredMock(
             Teams::class,
             [
-                'all' => array_map(function (string $name) {
-                    return ['name' => $name];
-                }, array_keys($teamMembers))
+                'all' => array_map(function (array $team) {
+                    return ['name' => $team['teamName'], 'id' => $team['id']];
+                }, array_values($teamMembers))
             ]
         );
 
@@ -82,18 +86,25 @@ class GithubSyncRemoverTest extends TestCase
         $team
             ->expects($this->exactly(count($membersExpectations)))
             ->method('members')
-            ->withConsecutive(...array_map(function (string $teamName) {
-                return [$teamName];
-            }, array_keys($membersExpectations)))
-            ->willReturnOnConsecutiveCalls(...array_values($membersExpectations));
+            ->withConsecutive(...array_map(function (array $team) {
+                return [$team['id']];
+            }, array_values($membersExpectations)))
+            ->willReturnOnConsecutiveCalls(...array_values(array_map(function (array $teamData) {
+                $members = [];
+                foreach ($teamData['members'] as $member) {
+                    $members[] = ['login' => $member];
+                }
+
+                return $members;
+            }, $membersExpectations)));
 
         $team
             ->expects($this->exactly(count($expectations)))
             ->method('removeMember')
             ->withConsecutive(...$expectations);
 
-        $groupsToDelete = array_map(function (string $name) {
-            return [$name];
+        $groupsToDelete = array_map(function (string $name) use ($teamMembers) {
+            return [$teamMembers[$name]['id']];
         }, array_diff(array_keys($teamMembers), $orgGroups));
 
         $team
@@ -111,20 +122,32 @@ class GithubSyncRemoverTest extends TestCase
                 ['test1', 'test2', 'test3'],
                 [
                     'org1' => [
-                        'test1',
-                        'test5',
-                        'test2',
+                        'id' => 31,
+                        'members' => [
+                            'test1',
+                            'test5',
+                            'test2',
+                        ],
                     ],
                     'org2' => [
-                        'test3',
+                        'id' => 91,
+                        'members' => [
+                            'test3',
+                        ],
                     ],
                     'org3' => [
-                        'test5',
-                        'test6',
+                        'id' => 87,
+                        'members' => [
+                            'test5',
+                            'test6',
+                        ],
                     ],
                     'org4' => [
-                        'test7',
-                    ]
+                        'id' => 11,
+                        'members' => [
+                            'test7',
+                        ],
+                    ],
                 ],
                 ['org1', 'org2', 'org3']
             ]
