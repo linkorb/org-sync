@@ -3,14 +3,20 @@
 namespace LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory;
 
 use LinkORB\OrgSync\DTO\Target;
+use LinkORB\OrgSync\Services\Ldap\Client;
+use LinkORB\OrgSync\Services\SyncRemover\LdapSyncRemover;
 use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\SetPasswordInterface;
+use LinkORB\OrgSync\SynchronizationAdapter\UserPush\LdapUserPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\UserPushInterface;
 
 class LdapAdapterFactory implements AdapterFactoryInterface
 {
+    /** @var Client */
+    private $client;
+
     public function createOrganizationPullAdapter(): OrganizationPullInterface
     {
         // TODO: Implement createOrganizationPullAdapter() method.
@@ -23,7 +29,7 @@ class LdapAdapterFactory implements AdapterFactoryInterface
 
     public function createUserPushAdapter(): UserPushInterface
     {
-        // TODO: Implement createUserPushAdapter() method.
+        return new LdapUserPushAdapter($this->client);
     }
 
     public function createSetPasswordAdapter(): SetPasswordInterface
@@ -33,16 +39,25 @@ class LdapAdapterFactory implements AdapterFactoryInterface
 
     public function setTarget(Target $target): AdapterFactoryInterface
     {
-        // TODO: Implement setTarget() method.
+        $this->client = new Client($target);
+        $this->client
+            ->init()
+            ->bind();
+
+        return $this;
     }
 
     public function createSyncRemover(): SyncRemoverInterface
     {
-        // TODO: Implement createSyncRemover() method.
+        return new LdapSyncRemover($this->client);
     }
 
     public function supports(string $action): bool
     {
-        return false;
+        return in_array($action, [
+            Target::GROUP_PUSH,
+            Target::SET_PASSWORD,
+            Target::USER_PUSH,
+        ], true);
     }
 }
