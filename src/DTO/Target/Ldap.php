@@ -24,13 +24,13 @@ final class Ldap extends Target
     public function __construct(
         string $baseUrl,
         string $name,
-        string $usersBindRdn,
+        string $bindRdn,
         string $password,
         array $domain
     ) {
         parent::__construct($baseUrl, $name);
 
-        $this->bindRdn = $usersBindRdn;
+        $this->bindRdn = $bindRdn;
         $this->password = $password;
         $this->domain = $domain;
     }

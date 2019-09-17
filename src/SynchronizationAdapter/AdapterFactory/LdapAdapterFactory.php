@@ -39,7 +39,7 @@ class LdapAdapterFactory implements AdapterFactoryInterface
 
     public function setTarget(Target $target): AdapterFactoryInterface
     {
-        $this->client = new Client($target);
+        $this->client = $this->getClient($target);
         $this->client
             ->init()
             ->bind();
@@ -59,5 +59,10 @@ class LdapAdapterFactory implements AdapterFactoryInterface
             Target::SET_PASSWORD,
             Target::USER_PUSH,
         ], true);
+    }
+
+    protected function getClient(Target\Ldap $target): Client
+    {
+        return new Client($target);
     }
 }
