@@ -4,9 +4,12 @@ namespace LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory;
 
 use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\Services\Ldap\Client;
+use LinkORB\OrgSync\Services\Ldap\LdapParentHelper;
+use LinkORB\OrgSync\Services\Ldap\UserDataMapper;
 use LinkORB\OrgSync\Services\SyncRemover\LdapSyncRemover;
 use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
+use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\LdapGroupPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\SetPasswordInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\LdapUserPushAdapter;
@@ -17,6 +20,18 @@ class LdapAdapterFactory implements AdapterFactoryInterface
     /** @var Client */
     private $client;
 
+    /** @var UserDataMapper */
+    private $userMapper;
+
+    /** @var LdapParentHelper */
+    private $parentHelper;
+
+    public function __construct()
+    {
+        $this->userMapper = new UserDataMapper();
+        $this->parentHelper = new LdapParentHelper();
+    }
+
     public function createOrganizationPullAdapter(): OrganizationPullInterface
     {
         // TODO: Implement createOrganizationPullAdapter() method.
@@ -24,12 +39,12 @@ class LdapAdapterFactory implements AdapterFactoryInterface
 
     public function createGroupPushAdapter(): GroupPushInterface
     {
-        // TODO: Implement createGroupPushAdapter() method.
+        return new LdapGroupPushAdapter($this->client, $this->userMapper, $this->parentHelper);
     }
 
     public function createUserPushAdapter(): UserPushInterface
     {
-        return new LdapUserPushAdapter($this->client);
+        return new LdapUserPushAdapter($this->client,$this->userMapper);
     }
 
     public function createSetPasswordAdapter(): SetPasswordInterface
@@ -49,7 +64,7 @@ class LdapAdapterFactory implements AdapterFactoryInterface
 
     public function createSyncRemover(): SyncRemoverInterface
     {
-        return new LdapSyncRemover($this->client);
+        return new LdapSyncRemover($this->client, $this->parentHelper);
     }
 
     public function supports(string $action): bool

@@ -52,9 +52,9 @@ class Client
     /**
      * @return resource
      */
-    public function search(string $query)
+    public function search(string $query, array $additionalDn = [])
     {
-        return ldap_search($this->connection, $this->getDcString(), $query);
+        return ldap_search($this->connection, $this->getDcString($additionalDn), $query);
     }
 
     /**
@@ -83,14 +83,14 @@ class Client
         return ldap_get_entries($this->connection, $result);
     }
 
-    public function add(array $data): bool
+    public function add(array $data, array $additionalDn = []): bool
     {
-        return ldap_add($this->connection, $this->getDn($data), $data);
+        return ldap_add($this->connection, $this->getDn($data, $additionalDn), $data);
     }
 
-    public function modify(array $data): bool
+    public function modify(array $data, array $additionalDn = []): bool
     {
-        return ldap_modify($this->connection, $this->getDn($data), $data);
+        return ldap_modify($this->connection, $this->getDn($data, $additionalDn), $data);
     }
 
     public function remove(string $dn): bool
@@ -98,9 +98,9 @@ class Client
         return ldap_delete($this->connection, $dn);
     }
 
-    private function getDn(array $data): string
+    public function getDn(array $data, array $additionalDn = []): string
     {
-        $excludeKeys = ['dc', 'objectClass'];
+        $excludeKeys = ['dc', 'objectClass', 'uniqueMember'];
         $dn = '';
 
         foreach ($data as $key => $item) {
@@ -111,15 +111,21 @@ class Client
             $dn .= sprintf('%s=%s+', $key, $item);
         }
 
-        return substr($dn, 0, -1) . ',' . $this->getDcString();
+        return substr($dn, 0, -1) . ',' . $this->getDcString($additionalDn);
     }
 
-    private function getDcString(): string
+    private function getDcString(array $additionalDn = []): string
     {
         $dc = '';
 
-        foreach ($this->target->getDomain() as $domainComponent) {
-            $dc .= sprintf('dc=%s,', $domainComponent);
+        foreach (array_merge($additionalDn, $this->target->getDomain()) as $key => $domainComponent) {
+            $dnKey = is_string($key) ? $key : 'dc';
+
+            $domainComponent = is_array($domainComponent) ? $domainComponent : [$domainComponent];
+
+            foreach ($domainComponent as $domainComponentElement) {
+                $dc .= sprintf('%s=%s,', $dnKey, $domainComponentElement);
+            }
         }
 
         return substr($dc, 0, -1);
