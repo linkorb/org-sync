@@ -15,7 +15,7 @@ interface SynchronizationMediatorInterface
 
     public function pushUser(User $user): self;
 
-    public function setPassword(User $user, string $password): self;
+    public function setPassword(User $user): self;
 
     public function pullOrganization(): Organization;
 

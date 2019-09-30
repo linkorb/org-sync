@@ -35,26 +35,26 @@ class LdapUserPushAdapter implements UserPushInterface
 
         $this->assertResult($usersOrgUnit !== null, 'Error during search!');
         if ($usersOrgUnit === 0) {
-            $this->client->add([
-                'ou' => static::USERS_ORG_UNIT,
-                'objectClass' => ['top', 'organizationalUnit'],
-            ]);
+            $this->client->add(
+                [
+                    'ou' => static::USERS_ORG_UNIT,
+                    'objectClass' => ['top', 'organizationalUnit'],
+                ],
+                ['ou' => static::USERS_ORG_UNIT]
+            );
         }
 
-        // TODO: Use ldap_add with LDAP_CONTROL_SYNC for PHP 7.3
-        $userSearchCount = $this->client->count(
+        $userFirst = $this->client->first(
             $this->client->search(sprintf('(cn=%s)', $user->getUsername()), ['ou' => static::USERS_ORG_UNIT])
         );
 
-        $this->assertResult($userSearchCount !== null, 'Error during search!');
-
-        if ($userSearchCount === 0) {
-            $res = $this->client->add($userInfo, ['ou' => static::USERS_ORG_UNIT]);
+        if (!$userFirst) {
+            $res = $this->client->add($userInfo, ['uid' => $user->getUsername(), 'ou' => static::USERS_ORG_UNIT]);
         } else {
-            $res = $this->client->modify($userInfo, ['ou' => static::USERS_ORG_UNIT]);
+            $res = $this->client->modify($userInfo, $this->client->getDn($userFirst));
         }
 
-        $this->assertResult((bool) $res, sprintf('User \'%s\' wasn\'t added', $user->getUsername()));
+        $this->assertResult((bool)$res, sprintf('User \'%s\' wasn\'t pushed', $user->getUsername()));
 
         return $this;
     }

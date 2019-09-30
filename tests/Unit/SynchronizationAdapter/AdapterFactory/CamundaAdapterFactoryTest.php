@@ -78,7 +78,9 @@ class CamundaAdapterFactoryTest extends TestCase
 
     public function testCreateOrganizationPullAdapter()
     {
-        $this->markTestSkipped('Need to implement');
+        $this->expectException(\BadMethodCallException::class);
+
+        $this->factory->createOrganizationPullAdapter();
     }
 
     public function testCreateSetPasswordAdapter()

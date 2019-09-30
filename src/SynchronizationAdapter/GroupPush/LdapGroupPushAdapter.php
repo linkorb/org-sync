@@ -6,7 +6,6 @@ use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\Services\Ldap\Client;
 use LinkORB\OrgSync\Services\Ldap\LdapAssertionAwareTrait;
 use LinkORB\OrgSync\Services\Ldap\LdapParentHelper;
-use LinkORB\OrgSync\Services\Ldap\UserDataMapper;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\LdapUserPushAdapter;
 
 class LdapGroupPushAdapter implements GroupPushInterface
@@ -18,16 +17,12 @@ class LdapGroupPushAdapter implements GroupPushInterface
     /** @var Client */
     private $client;
 
-    /** @var UserDataMapper */
-    private $mapper;
-
     /** @var LdapParentHelper */
     private $parentHelper;
 
-    public function __construct(Client $client, UserDataMapper $mapper, LdapParentHelper $parentHelper)
+    public function __construct(Client $client, LdapParentHelper $parentHelper)
     {
         $this->client = $client;
-        $this->mapper = $mapper;
         $this->parentHelper = $parentHelper;
     }
 
@@ -41,28 +36,29 @@ class LdapGroupPushAdapter implements GroupPushInterface
 
         $this->assertResult($groupsOrgUnit !== null, 'Error during search!');
         if ($groupsOrgUnit === 0) {
-            $this->client->add([
-                'ou' => static::GROUPS_ORG_UNIT,
-                'objectClass' => ['top', 'organizationalUnit'],
-            ]);
+            $this->client->add(
+                [
+                    'ou' => static::GROUPS_ORG_UNIT,
+                    'objectClass' => ['top', 'organizationalUnit'],
+                ],
+                ['ou' => static::GROUPS_ORG_UNIT]
+            );
         }
 
-        $groupRn = ['cn' => $this->parentHelper->getParentGroups([], $group), 'ou' => array_merge([static::GROUPS_ORG_UNIT])];
+        $groupRn = ['cn' => $this->parentHelper->getParentGroups([], $group), 'ou' => [static::GROUPS_ORG_UNIT]];
 
-        // TODO: Use ldap_add with LDAP_CONTROL_SYNC for PHP 7.3
-        $groupSearchCount = $this->client->count(
+        $groupFirst = $this->client->first(
             $this->client->search(sprintf('(cn=%s)', $group->getName()), $groupRn)
         );
 
-        $this->assertResult($groupSearchCount !== null, 'Error during search!');
-
-        if ($groupSearchCount === 0) {
+        if (!$groupFirst) {
+            array_unshift($groupRn['cn'], $group->getName());
             $res = $this->client->add($groupInfo, $groupRn);
         } else {
-            $res = $this->client->modify($groupInfo, $groupRn);
+            $res = $this->client->modify($groupInfo, $this->client->getDn($groupFirst));
         }
 
-        $this->assertResult((bool) $res, sprintf('Group \'%s\' wasn\'t added', $group->getName()));
+        $this->assertResult((bool)$res, sprintf('Group \'%s\' wasn\'t added', $group->getName()));
 
         return $this;
     }
@@ -76,9 +72,8 @@ class LdapGroupPushAdapter implements GroupPushInterface
         ];
 
         foreach ($group->getMembers() as $member) {
-            $groupInfo['uniqueMember'][] = $this->client->getDn(
-                $this->mapper->map($member),
-                ['ou' => LdapUserPushAdapter::USERS_ORG_UNIT]
+            $groupInfo['uniqueMember'][] = $this->client->generateDn(
+                ['uid' => $member->getUsername(), 'ou' => LdapUserPushAdapter::USERS_ORG_UNIT]
             );
         }
 

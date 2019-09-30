@@ -2,6 +2,7 @@
 
 namespace LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory;
 
+use BadMethodCallException;
 use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\Services\Ldap\Client;
 use LinkORB\OrgSync\Services\Ldap\LdapParentHelper;
@@ -11,6 +12,7 @@ use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\LdapGroupPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
+use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\LdapSetPasswordAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\SetPasswordInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\LdapUserPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\UserPushInterface;
@@ -34,12 +36,12 @@ class LdapAdapterFactory implements AdapterFactoryInterface
 
     public function createOrganizationPullAdapter(): OrganizationPullInterface
     {
-        // TODO: Implement createOrganizationPullAdapter() method.
+        throw new BadMethodCallException('Not implemented yet');
     }
 
     public function createGroupPushAdapter(): GroupPushInterface
     {
-        return new LdapGroupPushAdapter($this->client, $this->userMapper, $this->parentHelper);
+        return new LdapGroupPushAdapter($this->client, $this->parentHelper);
     }
 
     public function createUserPushAdapter(): UserPushInterface
@@ -49,7 +51,7 @@ class LdapAdapterFactory implements AdapterFactoryInterface
 
     public function createSetPasswordAdapter(): SetPasswordInterface
     {
-        // TODO: Implement createSetPasswordAdapter() method.
+        return new LdapSetPasswordAdapter($this->client);
     }
 
     public function setTarget(Target $target): AdapterFactoryInterface

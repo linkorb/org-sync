@@ -96,18 +96,15 @@ class LdapSyncRemover implements SyncRemoverInterface
             }
 
             $syncGroup = $syncGroups[$existingGroup['cn'][0]];
-            $groupDn = $this->client->getDn(
-                ['cn' => $syncGroup->getName()],
+            $groupDn = $this->client->generateDn(
                 [
-                    'cn' => $this->parentHelper->getParentGroups([], $syncGroup),
+                    'cn' => $this->parentHelper->getParentGroups([$syncGroup->getName()], $syncGroup),
                     'ou' => LdapGroupPushAdapter::GROUPS_ORG_UNIT,
                 ]
             );
 
             if ($groupDn !== $existingGroup['dn']) {
                 $this->client->remove($existingGroup['dn']);
-
-                continue;
             }
         }
     }

@@ -54,7 +54,7 @@ class Client
      */
     public function search(string $query, array $additionalDn = [])
     {
-        return ldap_search($this->connection, $this->getDcString($additionalDn), $query);
+        return ldap_search($this->connection, $this->generateDn($additionalDn), $query);
     }
 
     /**
@@ -83,14 +83,35 @@ class Client
         return ldap_get_entries($this->connection, $result);
     }
 
-    public function add(array $data, array $additionalDn = []): bool
+    /**
+     * @param resource $result
+     * @return resource
+     */
+    public function first($result)
     {
-        return ldap_add($this->connection, $this->getDn($data, $additionalDn), $data);
+        assert(is_resource($result));
+
+        return ldap_first_entry($this->connection, $result);
     }
 
-    public function modify(array $data, array $additionalDn = []): bool
+    /**
+     * @param resource $entry
+     */
+    public function getDn($entry): ?string
     {
-        return ldap_modify($this->connection, $this->getDn($data, $additionalDn), $data);
+        assert(is_resource($entry));
+
+        return ldap_get_dn($this->connection, $entry) ?: null;
+    }
+
+    public function add(array $data, array $rdn = []): bool
+    {
+        return ldap_add($this->connection, $this->generateDn($rdn), $data);
+    }
+
+    public function modify(array $data, string $dn): bool
+    {
+        return ldap_modify($this->connection, $dn, $data);
     }
 
     public function remove(string $dn): bool
@@ -98,27 +119,11 @@ class Client
         return ldap_delete($this->connection, $dn);
     }
 
-    public function getDn(array $data, array $additionalDn = []): string
-    {
-        $excludeKeys = ['dc', 'objectClass', 'uniqueMember'];
-        $dn = '';
-
-        foreach ($data as $key => $item) {
-            if (in_array($key, $excludeKeys, true)) {
-                continue;
-            }
-
-            $dn .= sprintf('%s=%s+', $key, $item);
-        }
-
-        return substr($dn, 0, -1) . ',' . $this->getDcString($additionalDn);
-    }
-
-    private function getDcString(array $additionalDn = []): string
+    public function generateDn(array $rdn = []): string
     {
         $dc = '';
 
-        foreach (array_merge($additionalDn, $this->target->getDomain()) as $key => $domainComponent) {
+        foreach (array_merge($rdn, $this->target->getDomain()) as $key => $domainComponent) {
             $dnKey = is_string($key) ? $key : 'dc';
 
             $domainComponent = is_array($domainComponent) ? $domainComponent : [$domainComponent];

@@ -27,6 +27,7 @@ class LdapAdapterFactoryTest extends TestCase
         $this->factory = $this->createPartialMock(LdapAdapterFactory::class, ['getClient']);
         $this->factory->method('getClient')->willReturn($this->client);
         $this->factory->setTarget(new Ldap('', '', '', '', []));
+        $this->factory->__construct();
     }
 
     public function testCreateUserPushAdapter()

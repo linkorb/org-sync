@@ -4,6 +4,8 @@ namespace LinkORB\OrgSync\DTO;
 
 class User
 {
+    public const PREVIOUS_PASSWORD = 'previousPassword';
+
     /**
      * @var string
      */
@@ -76,10 +78,26 @@ class User
         return $this->password;
     }
 
+   public function setPassword(?string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+   public function setPreviousPassword(?string $password): self
+    {
+        if ($password !== null) {
+            $this->properties[static::PREVIOUS_PASSWORD] = $password;
+        }
+
+        return $this;
+    }
+
     /**
-     * @return string
+     * @return string|null
      */
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }

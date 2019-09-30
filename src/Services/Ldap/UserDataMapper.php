@@ -10,9 +10,13 @@ class UserDataMapper
     {
         $userInfo = [
             'cn' => $user->getUsername(),
+            'uid' => $user->getUsername(),
             'sn' => $user->getProperties()['lastName'] ?? array_pop(explode(' ', (string) $user->getDisplayName())),
-            'mail' => $user->getEmail(),
         ];
+
+        if ($user->getEmail()) {
+            $userInfo['mail'] = $user->getEmail();
+        }
 
         if ($user->getDisplayName()) {
             $userInfo['displayName'] = $user->getDisplayName();

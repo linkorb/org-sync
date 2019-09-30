@@ -92,7 +92,7 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
         return $this;
     }
 
-    public function setPassword(User $user, string $password): SynchronizationMediatorInterface
+    public function setPassword(User $user): SynchronizationMediatorInterface
     {
         foreach ($this->inputHandler->getTargets() as $target) {
             $this->setTarget($target);
@@ -101,7 +101,7 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
                 continue;
             }
 
-            $this->adapterFactory->createSetPasswordAdapter()->setPassword($user, $password);
+            $this->adapterFactory->createSetPasswordAdapter()->setPassword($user);
         }
 
         $this->adapterFactory = null;

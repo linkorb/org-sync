@@ -41,8 +41,8 @@ class CamundaSetPasswordAdapterTest extends TestCase
     {
         $id = 'testId';
 
-        $user = $this->createConfiguredMock(User::class, ['getUsername' => $id]);
         $password = '0123456789';
+        $user = $this->createConfiguredMock(User::class, ['getUsername' => $id, 'getPassword' => $password]);
 
         $this->httpClient
             ->expects($this->once())
@@ -61,6 +61,6 @@ class CamundaSetPasswordAdapterTest extends TestCase
             )
             ->willReturn($this->createConfiguredMock(ResponseInterface::class, ['getStatusCode' => 200]));
 
-        $this->assertSame($this->adapter, $this->adapter->setPassword($user, $password));
+        $this->assertSame($this->adapter, $this->adapter->setPassword($user));
     }
 }
