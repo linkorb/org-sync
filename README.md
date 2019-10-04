@@ -6,7 +6,7 @@
 List of adapters:
 * [GitHub](https://github.com/) (WIP)
 * [Camunda](https://docs.camunda.org/manual/7.9/)
-* LDAP (Planned)
+* [LDAP](https://ldap.com/)
 * [MatterMost](https://mattermost.com/) (Planned)
 
 ## Installation

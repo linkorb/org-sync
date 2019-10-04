@@ -12,6 +12,7 @@ use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\LdapGroupPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\LdapUserPushAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use UnexpectedValueException;
 
 class LdapSyncRemoverTest extends TestCase
 {
@@ -122,6 +123,28 @@ class LdapSyncRemoverTest extends TestCase
             ->withConsecutive(...$expectedToRemoveGroups);
 
         $this->assertNull($this->syncRemover->removeNonExists($organization));
+    }
+
+    public function testRemoveException()
+    {
+        $this->client
+            ->expects($this->exactly(2))
+            ->method('search')
+            ->withConsecutive(
+                [sprintf('(ou=%s)', LdapUserPushAdapter::USERS_ORG_UNIT)],
+                [sprintf('(ou=%s)', LdapGroupPushAdapter::GROUPS_ORG_UNIT)]
+            )
+            ->willReturnOnConsecutiveCalls(null, null);
+        $this->client
+            ->expects($this->exactly(2))
+            ->method('count')
+            ->withConsecutive([null], [null])
+            ->willReturnOnConsecutiveCalls(null, null);
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Error during search!');
+
+        $this->syncRemover->removeNonExists(new Organization('test'));
     }
 
     public function getRemoveUsersData(): array

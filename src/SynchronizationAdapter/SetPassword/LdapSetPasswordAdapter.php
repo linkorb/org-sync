@@ -7,7 +7,7 @@ use LinkORB\OrgSync\Services\Ldap\Client;
 use LinkORB\OrgSync\Services\Ldap\LdapAssertionAwareTrait;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\LdapUserPushAdapter;
 
-final class LdapSetPasswordAdapter implements SetPasswordInterface
+class LdapSetPasswordAdapter implements SetPasswordInterface
 {
     use LdapAssertionAwareTrait;
 
@@ -30,7 +30,7 @@ final class LdapSetPasswordAdapter implements SetPasswordInterface
         $userSearchFirstDn = $this->client->getDn(
             $this->client->first(
                 $this->client->search(
-                    sprintf('(cn=%s)', $user->getUsername()),
+                    sprintf('(uid=%s)', $user->getUsername()),
                     ['ou' => LdapUserPushAdapter::USERS_ORG_UNIT]
                 )
             )
@@ -46,7 +46,7 @@ final class LdapSetPasswordAdapter implements SetPasswordInterface
         return $this;
     }
 
-    private function encodePassword(string $password): string
+    protected function encodePassword(string $password): string
     {
         $salt = substr(str_shuffle(
             str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 4)

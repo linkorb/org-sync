@@ -121,7 +121,7 @@ class Client
 
     public function generateDn(array $rdn = []): string
     {
-        $dc = '';
+        $dn = '';
 
         foreach (array_merge($rdn, $this->target->getDomain()) as $key => $domainComponent) {
             $dnKey = is_string($key) ? $key : 'dc';
@@ -129,10 +129,14 @@ class Client
             $domainComponent = is_array($domainComponent) ? $domainComponent : [$domainComponent];
 
             foreach ($domainComponent as $domainComponentElement) {
-                $dc .= sprintf('%s=%s,', $dnKey, $domainComponentElement);
+                $dn .= sprintf('%s=%s,', $dnKey, $domainComponentElement);
             }
         }
 
-        return substr($dc, 0, -1);
+        if (empty($dn)) {
+            return $dn;
+        }
+
+        return substr($dn, 0, -1);
     }
 }

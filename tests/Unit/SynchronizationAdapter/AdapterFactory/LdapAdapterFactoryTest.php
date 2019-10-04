@@ -7,6 +7,8 @@ use LinkORB\OrgSync\DTO\Target\Ldap;
 use LinkORB\OrgSync\Services\Ldap\Client;
 use LinkORB\OrgSync\Services\SyncRemover\LdapSyncRemover;
 use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\LdapAdapterFactory;
+use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\LdapGroupPushAdapter;
+use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\LdapSetPasswordAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\LdapUserPushAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -33,6 +35,16 @@ class LdapAdapterFactoryTest extends TestCase
     public function testCreateUserPushAdapter()
     {
         $this->assertInstanceOf(LdapUserPushAdapter::class, $this->factory->createUserPushAdapter());
+    }
+
+    public function testCreateGroupPushAdapter()
+    {
+        $this->assertInstanceOf(LdapGroupPushAdapter::class, $this->factory->createGroupPushAdapter());
+    }
+
+    public function testCreateSetPasswordAdapter()
+    {
+        $this->assertInstanceOf(LdapSetPasswordAdapter::class, $this->factory->createSetPasswordAdapter());
     }
 
     /**
