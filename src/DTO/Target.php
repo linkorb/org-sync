@@ -9,6 +9,7 @@ use Symfony\Component\Serializer\Annotation\DiscriminatorMap;
  *    "camunda"="LinkORB\OrgSync\DTO\Target\Camunda",
  *    "github"="LinkORB\OrgSync\DTO\Target\Github",
  *    "ldap"="LinkORB\OrgSync\DTO\Target\Ldap",
+ *    "mattermost"="LinkORB\OrgSync\DTO\Target\Mattermost",
  * })
  */
 abstract class Target
@@ -19,7 +20,7 @@ abstract class Target
     public const PULL_ORGANIZATION = 'organization_pull';
 
     /** @var string */
-    private $baseUrl;
+    protected $baseUrl;
 
     /** @var string */
     private $name;
