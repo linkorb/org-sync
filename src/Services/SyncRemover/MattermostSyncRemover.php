@@ -3,21 +3,28 @@
 namespace LinkORB\OrgSync\Services\SyncRemover;
 
 use Gnello\Mattermost\Driver;
+use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\Organization;
+use LinkORB\OrgSync\Services\Mattermost\BaseEntriesProvider;
 
 class MattermostSyncRemover implements SyncRemoverInterface
 {
     /** @var Driver */
     private $driver;
 
-    public function __construct(Driver $driver)
+    /** @var BaseEntriesProvider */
+    private $provider;
+
+    public function __construct(Driver $driver, BaseEntriesProvider $provider)
     {
         $this->driver = $driver;
+        $this->provider = $provider;
     }
 
     public function removeNonExists(Organization $organization): void
     {
-        $existingUsers = $this->getExistingUsers();
+        $existingUsers = $this->provider->getExistingUsers();
+        $existingGroups = $this->provider->getExistingGroups();
 
         // Removing users
         $syncUsers = [];
@@ -25,29 +32,42 @@ class MattermostSyncRemover implements SyncRemoverInterface
             $syncUsers[$user->getUsername()] = $user;
         }
 
+        $existingUsersIds = [];
         foreach ($existingUsers as $existingUser) {
+            $existingUsersIds[$existingUser['username']] = $existingUser['id'];
+
             if (!isset($syncUsers[$existingUser['username']])) {
                 $this->driver->getUserModel()->deactivateUserAccount($existingUser['id']);
             }
         }
+
+        // Removing groups
+        $syncGroups = [];
+        foreach ($organization->getGroups() as $group) {
+            $syncGroups[$group->getName()] = $group;
+        }
+
+        foreach ($existingGroups as $existingGroup) {
+            if (!isset($syncGroups[$existingGroup['name']])) {
+                $this->driver->getTeamModel()->deleteTeam($existingGroup['id']);
+
+                continue;
+            }
+
+            $membersMap = [];
+            /** @var Group $group */
+            $group = $syncGroups[$existingGroup['name']];
+            foreach ($group->getMembers() as $member) {
+                $membersMap[$existingUsersIds[$member->getUsername()]] = true;
+            }
+
+            foreach ($this->provider->getTeamMembers($existingGroup['id']) as $member) {
+                if (!isset($membersMap[$member])) {
+                    $this->driver->getTeamModel()->removeUser($existingGroup['id'], $member, []);
+                }
+            }
+        }
     }
 
-    private function getExistingUsers(): array
-    {
-        $users = json_decode(
-            (string) $this->driver->getUserModel()->getUsers(['per_page' => 200])->getBody(),
-            true
-        );
 
-        $users = array_filter($users, function (array $user) {
-            return $user['delete_at'] === 0;
-        });
-
-        return array_map(function (array $user) {
-            return [
-                'username' => $user['username'] ?? '',
-                'id' => $user['id'] ?? '',
-            ];
-        }, $users);
-    }
 }
