@@ -5,7 +5,7 @@ namespace LinkORB\OrgSync\Tests\Unit\SynchronizationAdapter\SetPassword;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\CamundaSetPasswordAdapter;
 use PHPUnit\Framework\MockObject\MockObject;

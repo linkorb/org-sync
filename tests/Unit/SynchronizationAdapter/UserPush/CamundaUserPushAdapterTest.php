@@ -7,7 +7,7 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\User;
 use LinkORB\OrgSync\Exception\UserSyncException;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\CamundaUserPushAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
