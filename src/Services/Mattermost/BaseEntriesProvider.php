@@ -65,8 +65,8 @@ class BaseEntriesProvider
             $entries = array_merge($entries, $responseData);
         } while (count($responseData) === $limit);
 
-        return array_filter($entries, function (array $entry) {
+        return array_values(array_filter($entries, function (array $entry) {
             return $entry['delete_at'] === 0;
-        });
+        }));
     }
 }

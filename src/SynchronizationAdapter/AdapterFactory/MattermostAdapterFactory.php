@@ -7,7 +7,7 @@ use Gnello\Mattermost\Driver;
 use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\DTO\Target\Mattermost;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 use LinkORB\OrgSync\Services\Mattermost\BaseEntriesProvider;
 use LinkORB\OrgSync\Services\PasswordHelper;
 use LinkORB\OrgSync\Services\SyncRemover\MattermostSyncRemover;
@@ -87,7 +87,7 @@ class MattermostAdapterFactory implements AdapterFactoryInterface
             'driver' => $driverOpts
         ]);
 
-        $this->driver = new Driver($container);
+        $this->driver = $this->getDriver($container);
         $this->driver->authenticate();
         $this->passwordHelper = $this->getPasswordHelper($this->defaultPassSalt . $target->getName());
 
@@ -111,5 +111,10 @@ class MattermostAdapterFactory implements AdapterFactoryInterface
     protected function getPasswordHelper(?string $salt): PasswordHelper
     {
         return new PasswordHelper($salt);
+    }
+
+    protected function getDriver(Container $container): Driver
+    {
+        return new Driver($container);
     }
 }

@@ -5,7 +5,7 @@ namespace LinkORB\OrgSync\SynchronizationAdapter\SetPassword;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
 
 final class CamundaSetPasswordAdapter implements SetPasswordInterface

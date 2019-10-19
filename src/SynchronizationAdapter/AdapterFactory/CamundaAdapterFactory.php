@@ -12,7 +12,7 @@ use LinkORB\OrgSync\Services\Camunda\CamundaGroupMemberProvider;
 use LinkORB\OrgSync\Services\Camunda\CamundaGroupProvider;
 use LinkORB\OrgSync\Services\Camunda\CamundaUserMapper;
 use LinkORB\OrgSync\Services\Camunda\CamundaUserProvider;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
 use LinkORB\OrgSync\Services\SyncRemover\CamundaSyncRemover;
 use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;

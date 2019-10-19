@@ -4,7 +4,7 @@ namespace LinkORB\OrgSync\SynchronizationAdapter\UserPush;
 
 use Gnello\Mattermost\Driver;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
 
 class MattermostUserPushAdapter implements UserPushInterface

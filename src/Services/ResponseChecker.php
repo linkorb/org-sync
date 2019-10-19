@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace LinkORB\OrgSync\Services\Camunda;
+namespace LinkORB\OrgSync\Services;
 
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\User;
