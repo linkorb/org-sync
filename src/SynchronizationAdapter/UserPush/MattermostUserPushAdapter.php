@@ -36,10 +36,10 @@ class MattermostUserPushAdapter implements UserPushInterface
             $responseBody = json_decode((string) $response->getBody(), true);
 
             if ($responseBody['delete_at'] !== 0) {
-                $this->driver->getUserModel()->updateUserActive($responseBody['id'] ?? '', ['active' => true]);
+                $this->driver->getUserModel()->updateUserActive($responseBody['id'], ['active' => true]);
             }
 
-            $response = $this->driver->getUserModel()->patchUser($responseBody['id'] ?? '', $requestOptions);
+            $response = $this->driver->getUserModel()->patchUser($responseBody['id'], $requestOptions);
         } else {
             $requestOptions['password'] = $this->passwordHelper->getDefaultPassword($user->getUsername());
 
@@ -56,8 +56,8 @@ class MattermostUserPushAdapter implements UserPushInterface
         return [
             'email' => $user->getEmail(),
             'username' => $user->getUsername(),
-            'first_name' => $user->getProperties()['firstName'] ?? null,
-            'last_name' => $user->getProperties()['lastName'] ?? null,
+            'first_name' => $user->getProperties()[User::FIRST_NAME] ?? null,
+            'last_name' => $user->getProperties()[User::LAST_NAME] ?? null,
             'nickname' => $user->getDisplayName(),
         ];
     }

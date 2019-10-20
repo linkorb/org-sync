@@ -32,6 +32,10 @@ class MattermostGroupPushAdapter implements GroupPushInterface
             throw new BadMethodCallException('Unable to perform action. Try hard remove teams by CLI. See https://docs.mattermost.com/administration/command-line-tools.html');
         }
 
+        if (empty($group->getMembers())) {
+            return $this;
+        }
+
         $teamId = $this->getTeamId($response);
         $membersIds = [];
         foreach ($group->getMembers() as $member) {
@@ -93,7 +97,7 @@ class MattermostGroupPushAdapter implements GroupPushInterface
     {
         $teamData = json_decode((string) $response->getBody(), true);
 
-        return $teamData['id'] ?? '';
+        return $teamData['id'];
     }
 
     private function getMemberId(User $user): string
@@ -103,6 +107,6 @@ class MattermostGroupPushAdapter implements GroupPushInterface
             true
         );
 
-        return $response['id'] ?? '';
+        return $response['id'];
     }
 }

@@ -11,7 +11,8 @@ class UserDataMapper
         $userInfo = [
             'cn' => $user->getUsername(),
             'uid' => $user->getUsername(),
-            'sn' => $user->getProperties()['lastName'] ?? array_pop(explode(' ', (string) $user->getDisplayName())),
+            'sn' => $user->getProperties()[User::LAST_NAME]
+                ?? array_pop(explode(' ', (string) $user->getDisplayName())),
         ];
 
         if ($user->getEmail()) {

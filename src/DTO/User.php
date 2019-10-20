@@ -5,6 +5,8 @@ namespace LinkORB\OrgSync\DTO;
 class User
 {
     public const PREVIOUS_PASSWORD = 'previousPassword';
+    public const FIRST_NAME = 'firstName';
+    public const LAST_NAME = 'lastName';
 
     /**
      * @var string
