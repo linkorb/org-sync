@@ -12,15 +12,13 @@ use LinkORB\OrgSync\Services\Camunda\CamundaGroupMemberProvider;
 use LinkORB\OrgSync\Services\Camunda\CamundaGroupProvider;
 use LinkORB\OrgSync\Services\Camunda\CamundaUserMapper;
 use LinkORB\OrgSync\Services\Camunda\CamundaUserProvider;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
 use LinkORB\OrgSync\Services\SyncRemover\CamundaSyncRemover;
 use LinkORB\OrgSync\Services\SyncRemover\SyncRemoverInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\CamundaGroupPushAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\GroupPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPull\OrganizationPullInterface;
-use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\CamundaOrganizationPushAdapter;
-use LinkORB\OrgSync\SynchronizationAdapter\OrganizationPush\OrganizationPushInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\CamundaSetPasswordAdapter;
 use LinkORB\OrgSync\SynchronizationAdapter\SetPassword\SetPasswordInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\UserPush\CamundaUserPushAdapter;
@@ -89,11 +87,6 @@ class CamundaAdapterFactory implements AdapterFactoryInterface
         );
     }
 
-    public function createOrganizationPushAdapter(): OrganizationPushInterface
-    {
-        return new CamundaOrganizationPushAdapter();
-    }
-
     public function createSyncRemover(): SyncRemoverInterface
     {
         $userProvider = new CamundaUserProvider($this->camundaClient, new CamundaUserMapper());
@@ -102,6 +95,15 @@ class CamundaAdapterFactory implements AdapterFactoryInterface
         $userGroupProvider = new CamundaGroupMemberProvider($this->camundaClient, $groupMapper);
 
         return new CamundaSyncRemover($userProvider, $groupProvider, $userGroupProvider, $this->camundaClient);
+    }
+
+    public function supports(string $action): bool
+    {
+        return in_array($action, [
+            Target::GROUP_PUSH,
+            Target::SET_PASSWORD,
+            Target::USER_PUSH,
+        ]);
     }
 
     protected function getClient(array $options): Client

@@ -4,6 +4,7 @@ namespace LinkORB\OrgSync\Tests\Unit\Services\SyncRemover;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\DTO\User;
 use LinkORB\OrgSync\Services\Camunda\CamundaGroupMemberProvider;
 use LinkORB\OrgSync\Services\Camunda\CamundaGroupProvider;

@@ -50,4 +50,27 @@ class GroupTest extends AbstractGettersTestCase
     {
         return Group::class;
     }
+
+    /**
+     * @dataProvider getAddPropertyData
+     */
+    public function testAddProperty(string $key, $value, $expected, bool $override, array $defaultProps)
+    {
+        $group = new Group('', '', null, null, [], $defaultProps);
+
+        $group->addProperty($key, $value, $override);
+
+        $this->assertEquals($expected, $group->getProperties()[$key]);
+    }
+
+    public function getAddPropertyData(): array
+    {
+        return [
+            ['test', 1, 1, true, [],],
+            ['test1', false, false, true, ['test1' => true],],
+            ['test2', false, true, false, ['test2' => true, 'test1' => false,]],
+            ['qwerty', 'temp', 'temp', false, ['test1' => false,]],
+            ['qwerty', '123', 'temp', false, ['qwerty' => 'temp',]],
+        ];
+    }
 }

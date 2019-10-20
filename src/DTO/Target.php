@@ -7,12 +7,20 @@ use Symfony\Component\Serializer\Annotation\DiscriminatorMap;
 /**
  * @DiscriminatorMap(typeProperty="type", mapping={
  *    "camunda"="LinkORB\OrgSync\DTO\Target\Camunda",
+ *    "github"="LinkORB\OrgSync\DTO\Target\Github",
+ *    "ldap"="LinkORB\OrgSync\DTO\Target\Ldap",
+ *    "mattermost"="LinkORB\OrgSync\DTO\Target\Mattermost",
  * })
  */
 abstract class Target
 {
+    public const USER_PUSH = 'push_user';
+    public const GROUP_PUSH = 'push_group';
+    public const SET_PASSWORD = 'set_password';
+    public const PULL_ORGANIZATION = 'organization_pull';
+
     /** @var string */
-    private $baseUrl;
+    protected $baseUrl;
 
     /** @var string */
     private $name;

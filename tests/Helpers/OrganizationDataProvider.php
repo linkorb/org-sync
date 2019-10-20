@@ -7,6 +7,7 @@ use LinkORB\OrgSync\DTO\Organization;
 use LinkORB\OrgSync\DTO\Target;
 use LinkORB\OrgSync\DTO\Target\Camunda;
 use LinkORB\OrgSync\DTO\User;
+use LinkORB\OrgSync\Services\InputHandler;
 
 class OrganizationDataProvider
 {
@@ -128,19 +129,29 @@ class OrganizationDataProvider
      * @param Target[] $targets
      * @return Group[]
      */
-    public static function transformToGroups(array $groupsArray, array $users, array $targets): array
+    public static function transformToGroups(
+        array $groupsArray,
+        array $users,
+        array $targets,
+        string $orgName = null
+    ): array
     {
         /** @var Group[] $groups */
         $groups = [];
         $groupParents = [];
         foreach ($groupsArray as $name => $group) {
+            $props = $group['properties'] ?? [];
+            if ($orgName) {
+                $props[InputHandler::GITHUB_ORGANIZATION] = $orgName;
+            }
+
             $groups[] = new Group(
                 $name,
                 $group['displayName'],
                 $group['avatar'],
                 null,
                 [],
-                $group['properties'] ?? []
+                $props
             );
 
             foreach ($group['targets'] ?? [] as $linkedTarget) {

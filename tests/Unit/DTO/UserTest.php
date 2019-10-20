@@ -42,4 +42,22 @@ class UserTest extends AbstractGettersTestCase
     {
         return User::class;
     }
+
+    public function testSetPassword()
+    {
+        $somePass = '0000000';
+
+        $dto = (new User('user1', 'differentPass'))->setPassword($somePass);
+
+        $this->assertSame($dto->getPassword(), $somePass);
+    }
+
+    public function testSetPreviousPassword()
+    {
+        $somePass = '0000000';
+
+        $dto = (new User('user1', 'differentPass'))->setPreviousPassword($somePass);
+
+        $this->assertSame($dto->getProperties()[User::PREVIOUS_PASSWORD], $somePass);
+    }
 }

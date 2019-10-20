@@ -15,8 +15,8 @@ final class CamundaUserMapper
             null,
             null,
             [
-                'firstName' => $data['firstName'] ?? null,
-                'lastName' => $data['lastName'] ?? null,
+                User::FIRST_NAME => $data['firstName'] ?? null,
+                User::LAST_NAME => $data['lastName'] ?? null,
             ]
         );
     }

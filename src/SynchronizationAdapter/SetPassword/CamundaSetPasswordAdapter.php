@@ -5,7 +5,7 @@ namespace LinkORB\OrgSync\SynchronizationAdapter\SetPassword;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
 
 final class CamundaSetPasswordAdapter implements SetPasswordInterface
@@ -26,15 +26,16 @@ final class CamundaSetPasswordAdapter implements SetPasswordInterface
         $this->responseChecker = $responseChecker;
     }
 
-    public function setPassword(User $user, string $password): SetPasswordInterface
+    public function setPassword(User $user): SetPasswordInterface
     {
-        $authPassword = $user->getPassword() ?? $this->passwordHelper->getDefaultPassword($user->getUsername());
+        $authPassword = $user->getProperties()[User::PREVIOUS_PASSWORD]
+            ?? $this->passwordHelper->getDefaultPassword($user->getUsername());
 
         $response = $this->httpClient->put(
             sprintf('user/%s/credentials', $user->getUsername()),
             [
                 RequestOptions::JSON => [
-                    'password' => $password,
+                    'password' => $user->getPassword(),
                     'authenticatedUserPassword' => $authPassword,
                 ],
             ]

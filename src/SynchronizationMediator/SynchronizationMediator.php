@@ -3,6 +3,7 @@
 namespace LinkORB\OrgSync\SynchronizationMediator;
 
 use LinkORB\OrgSync\DTO\Target;
+use LinkORB\OrgSync\Exception\SyncTargetException;
 use LinkORB\OrgSync\Services\InputHandler;
 use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryInterface;
 use LinkORB\OrgSync\SynchronizationAdapter\AdapterFactory\AdapterFactoryPoolInterface;
@@ -49,12 +50,15 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
         foreach ($this->inputHandler->getTargets() as $target) {
             $this->setTarget($target);
 
+            $this->adapterFactory->createSyncRemover()->removeNonExists($organization);
+        }
+
+        foreach ($this->inputHandler->getTargets() as $target) {
+            $this->setTarget($target);
+
             foreach ($organization->getUsers() as $user) {
                 $this->pushUser($user);
             }
-
-            $this->adapterFactory->createSyncRemover()->removeNonExists($organization);
-            $this->adapterFactory->createOrganizationPushAdapter()->pushOrganization($organization);
         }
 
         foreach ($organization->getGroups() as $group) {
@@ -72,24 +76,32 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
 
     public function pushGroup(Group $group): SynchronizationMediatorInterface
     {
-        $this->adapterFactory->createGroupPushAdapter()->pushGroup($group);
+        if ($this->adapterFactory->supports(Target::GROUP_PUSH)) {
+            $this->adapterFactory->createGroupPushAdapter()->pushGroup($group);
+        }
 
         return $this;
     }
 
     public function pushUser(User $user): SynchronizationMediatorInterface
     {
-        $this->adapterFactory->createUserPushAdapter()->pushUser($user);
+        if ($this->adapterFactory->supports(Target::USER_PUSH)) {
+            $this->adapterFactory->createUserPushAdapter()->pushUser($user);
+        }
 
         return $this;
     }
 
-    public function setPassword(User $user, string $password): SynchronizationMediatorInterface
+    public function setPassword(User $user): SynchronizationMediatorInterface
     {
         foreach ($this->inputHandler->getTargets() as $target) {
             $this->setTarget($target);
 
-            $this->adapterFactory->createSetPasswordAdapter()->setPassword($user, $password);
+            if (!$this->adapterFactory->supports(Target::SET_PASSWORD)) {
+                continue;
+            }
+
+            $this->adapterFactory->createSetPasswordAdapter()->setPassword($user);
         }
 
         $this->adapterFactory = null;
@@ -99,6 +111,12 @@ class SynchronizationMediator implements SynchronizationMediatorInterface
 
     public function pullOrganization(): Organization
     {
+        if (!$this->adapterFactory->supports(Target::PULL_ORGANIZATION)) {
+            throw new SyncTargetException(
+                sprintf('Current target doesn\'t support \'%s\' action', Target::PULL_ORGANIZATION)
+            );
+        }
+
         return $this->adapterFactory->createOrganizationPullAdapter()->pullOrganization();
     }
 }

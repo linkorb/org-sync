@@ -8,7 +8,7 @@ use Exception;
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\User;
 use LinkORB\OrgSync\Exception\GroupSyncException;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 use LinkORB\OrgSync\SynchronizationAdapter\GroupPush\CamundaGroupPushAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

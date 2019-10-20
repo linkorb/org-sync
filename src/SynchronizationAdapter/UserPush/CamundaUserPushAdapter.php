@@ -5,7 +5,7 @@ namespace LinkORB\OrgSync\SynchronizationAdapter\UserPush;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 use LinkORB\OrgSync\Services\PasswordHelper;
 
 final class CamundaUserPushAdapter implements UserPushInterface
@@ -50,8 +50,8 @@ final class CamundaUserPushAdapter implements UserPushInterface
                 RequestOptions::JSON => [
                     'profile' => [
                         'id' => $user->getUsername(),
-                        'firstName' => $user->getProperties()['firstName'] ?? null,
-                        'lastName' => $user->getProperties()['lastName'] ?? null,
+                        'firstName' => $user->getProperties()[User::FIRST_NAME] ?? null,
+                        'lastName' => $user->getProperties()[User::LAST_NAME] ?? null,
                         'email' => $user->getEmail(),
                     ],
                     'credentials' => [
@@ -71,8 +71,8 @@ final class CamundaUserPushAdapter implements UserPushInterface
             [
                 RequestOptions::JSON => [
                     'id' => $user->getUsername(),
-                    'firstName' => $user->getProperties()['firstName'] ?? null,
-                    'lastName' => $user->getProperties()['lastName'] ?? null,
+                    'firstName' => $user->getProperties()[User::FIRST_NAME] ?? null,
+                    'lastName' => $user->getProperties()[User::LAST_NAME] ?? null,
                     'email' => $user->getEmail(),
                 ],
             ]

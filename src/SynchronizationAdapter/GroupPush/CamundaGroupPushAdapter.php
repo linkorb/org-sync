@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use LinkORB\OrgSync\DTO\Group;
 use LinkORB\OrgSync\DTO\User;
-use LinkORB\OrgSync\Services\Camunda\ResponseChecker;
+use LinkORB\OrgSync\Services\ResponseChecker;
 
 final class CamundaGroupPushAdapter implements GroupPushInterface
 {
@@ -41,7 +41,6 @@ final class CamundaGroupPushAdapter implements GroupPushInterface
 
         $this->responseChecker->assertResponse($response);
 
-        // TODO: remove old members
         foreach ($group->getMembers() as $member) {
             $this->addMember($group->getName(), $member);
         }
